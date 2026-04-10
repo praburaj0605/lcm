@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>FreightDesk — Enquiry Management</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #0d0f12;
+  --bg2: #13161b;
+  --bg3: #1a1e26;
+  --bg4: #222733;
+  --line: #2a2f3d;
+  --line2: #353c4e;
+  --accent: #2563eb;
+  --accent2: #1d4ed8;
+  --accent-dim: rgba(37,99,235,0.15);
+  --accent-dim2: rgba(37,99,235,0.08);
+  --green: #16a34a;
+  --green-dim: rgba(22,163,74,0.15);
+  --amber: #d97706;
+  --amber-dim: rgba(217,119,6,0.15);
+  --red: #dc2626;
+  --red-dim: rgba(220,38,38,0.15);
+  --cyan: #0891b2;
+  --cyan-dim: rgba(8,145,178,0.12);
+  --t1: #f0f2f7;
+  --t2: #8891a8;
+  --t3: #555e75;
+  --t4: #3a4155;
+  --font: 'IBM Plex Sans', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --r: 0px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--t1); font-size: 13px; line-height: 1.5; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--line2); }
+input, select, textarea, button { font-family: var(--font); }
+
+/* ── Shell ── */
+.shell { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--line);
+  display: flex; flex-direction: column;
+}
+.sidebar-brand {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.brand-logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.brand-icon {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+}
+.brand-icon svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2; }
+.brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; color: var(--t1); font-family: var(--mono); }
+.brand-sub { font-size: 10px; color: var(--t3); font-family: var(--mono); letter-spacing: 0.08em; margin-top: 1px; }
+
+.nav { padding: 10px 0; flex: 1; }
+.nav-section-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.12em;
+  color: var(--t3); text-transform: uppercase;
+  padding: 8px 16px 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 16px; font-size: 12px; font-weight: 500;
+  color: var(--t2); cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.1s;
+}
+.nav-item:hover { color: var(--t1); background: var(--bg3); }
+.nav-item.active { color: var(--t1); background: var(--accent-dim2); border-left-color: var(--accent); }
+.nav-item svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; flex-shrink: 0; }
+.nav-count {
+  margin-left: auto; font-size: 10px; font-weight: 600;
+  background: var(--bg4); color: var(--t2);
+  padding: 1px 6px; font-family: var(--mono);
+}
+
+.sidebar-user {
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px;
+}
+.user-avatar {
+  width: 28px; height: 28px; background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+  font-family: var(--mono);
+}
+.user-name { font-size: 12px; font-weight: 500; color: var(--t1); }
+.user-role { font-size: 10px; color: var(--t3); }
+
+/* ── Main ── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.topbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--line);
+  padding: 0 20px;
+  height: 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.page-title { font-size: 14px; font-weight: 600; color: var(--t1); font-family: var(--mono); }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; font-size: 12px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--line2);
+  background: var(--bg3); color: var(--t1);
+  transition: all 0.1s; white-space: nowrap;
+}
+.btn:hover { background: var(--bg4); border-color: var(--t4); }
+.btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent2); border-color: var(--accent2); }
+.btn-danger { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+.btn-danger:hover { background: var(--red); color: #fff; }
+.btn-sm { padding: 5px 10px; font-size: 11px; }
+.btn-icon { padding: 6px; }
+
+/* Content area */
+.content { flex: 1; overflow-y: auto; padding: 20px; }
+
+/* Stats row */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-bottom: 20px; }
+.stat-card { background: var(--bg2); padding: 14px 16px; }
+.stat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--t3); text-transform: uppercase; font-family: var(--mono); }
+.stat-val { font-size: 24px; font-weight: 700; color: var(--t1); margin-top: 4px; font-family: var(--mono); line-height: 1; }
+.stat-sub { font-size: 10px; color: var(--t3); margin-top: 4px; }
+.stat-dot { display: inline-block; width: 6px; height: 6px; margin-right: 4px; }
+
+/* Table */
+.tbl-wrap { border: 1px solid var(--line); background: var(--bg2); }
+.tbl-header { padding: 12px 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.tbl-title { font-size: 12px; font-weight: 600; color: var(--t1); font-family: var(--mono); }
+.tbl-tools { display: flex; align-items: center; gap: 8px; }
+.search-box {
+  position: relative;
+}
+.search-box input {
+  background: var(--bg3); border: 1px solid var(--line2);
+  color: var(--t1); padding: 6px 10px 6px 30px;
+  font-size: 12px; width: 200px;
+}
+.search-box input::placeholder { color: var(--t3); }
+.search-box svg { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; stroke: var(--t3); fill: none; stroke-width: 2; }
+.filter-sel {
+  background: var(--bg3); border: 1px solid var(--line2);
+  color: var(--t2); padding: 6px 28px 6px 10px; font-size: 12px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23555e75' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center;
+}
+
+table { width: 100%; border-collapse: collapse; }
+thead tr { border-bottom: 1px solid var(--line); }
+th {
+  padding: 9px 12px; text-align: left;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+  color: var(--t3); text-transform: uppercase; font-family: var(--mono);
+  white-space: nowrap;
+}
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--t2); font-size: 12px; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--bg3); color: var(--t1); }
+tbody tr { cursor: pointer; }
+.td-primary { color: var(--t1) !important; font-weight: 500; }
+.td-mono { font-family: var(--mono); font-size: 11px; }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.04em; font-family: var(--mono);
+}
+.badge-new { background: var(--accent-dim); color: #60a5fa; border: 1px solid rgba(96,165,250,0.3); }
+.badge-progress { background: var(--amber-dim); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+.badge-quoted { background: var(--cyan-dim); color: #22d3ee; border: 1px solid rgba(34,211,238,0.3); }
+.badge-won { background: var(--green-dim); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
+.badge-lost { background: var(--red-dim); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+.badge-draft { background: var(--bg4); color: var(--t3); border: 1px solid var(--line2); }
+.badge-sent { background: var(--cyan-dim); color: #22d3ee; border: 1px solid rgba(34,211,238,0.3); }
+.badge-accepted { background: var(--green-dim); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
+.badge-sea { background: var(--accent-dim); color: #60a5fa; }
+.badge-air { background: var(--cyan-dim); color: #22d3ee; }
+.badge-road { background: var(--amber-dim); color: #fbbf24; }
+
+.row-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.1s; }
+tr:hover .row-actions { opacity: 1; }
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 40px 20px; overflow-y: auto;
+}
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--line2);
+  width: 100%; max-width: 720px;
+  flex-shrink: 0;
+}
+.modal-head {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg3);
+}
+.modal-title { font-size: 13px; font-weight: 600; font-family: var(--mono); color: var(--t1); }
+.modal-close { background: none; border: none; cursor: pointer; color: var(--t3); padding: 2px; }
+.modal-close:hover { color: var(--t1); }
+.modal-close svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+.modal-body { padding: 18px; }
+.modal-footer { padding: 14px 18px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 8px; background: var(--bg3); }
+
+/* Form elements */
+.form-grid { display: grid; gap: 14px; }
+.fg2 { grid-template-columns: 1fr 1fr; }
+.fg3 { grid-template-columns: 1fr 1fr 1fr; }
+.full { grid-column: 1 / -1; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--t3); text-transform: uppercase; font-family: var(--mono); }
+.field label .req { color: var(--red); margin-left: 2px; }
+input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="date"], select, textarea {
+  background: var(--bg3); border: 1px solid var(--line2);
+  color: var(--t1); padding: 8px 10px; font-size: 12px;
+  width: 100%; outline: none;
+  transition: border-color 0.1s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+input::placeholder, textarea::placeholder { color: var(--t4); }
+select {
+  appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23555e75' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 9px center; padding-right: 28px;
+}
+select option { background: var(--bg3); }
+textarea { resize: vertical; min-height: 70px; }
+
+/* Section divider in modal */
+.form-section { margin-top: 16px; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.form-section-title { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; font-family: var(--mono); }
+
+/* Radio toggle */
+.radio-row { display: flex; gap: 0; }
+.radio-opt {
+  padding: 7px 14px; font-size: 11px; font-weight: 500;
+  border: 1px solid var(--line2); cursor: pointer;
+  color: var(--t3); background: var(--bg3);
+  margin-left: -1px; transition: all 0.1s;
+  font-family: var(--mono);
+}
+.radio-opt:first-child { margin-left: 0; }
+.radio-opt.on { background: var(--accent-dim); color: #60a5fa; border-color: var(--accent); z-index: 1; }
+
+/* Mode buttons */
+.mode-row { display: flex; gap: 0; }
+.mode-btn {
+  padding: 7px 14px; font-size: 11px; font-weight: 500;
+  border: 1px solid var(--line2); cursor: pointer;
+  color: var(--t3); background: var(--bg3);
+  margin-left: -1px; transition: all 0.1s;
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--mono);
+}
+.mode-btn:first-child { margin-left: 0; }
+.mode-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.mode-btn.on { background: var(--accent-dim); color: #60a5fa; border-color: var(--accent); z-index: 1; }
+
+/* Cargo table in form */
+.cargo-tbl { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.cargo-tbl th { padding: 6px 8px; font-size: 9px; letter-spacing: 0.1em; color: var(--t3); text-transform: uppercase; font-family: var(--mono); border-bottom: 1px solid var(--line); text-align: left; background: var(--bg3); }
+.cargo-tbl td { padding: 4px 4px; border-bottom: 1px solid var(--line); }
+.cargo-tbl input, .cargo-tbl select { padding: 5px 7px; font-size: 11px; }
+.cargo-tbl tr:last-child td { border-bottom: none; }
+
+/* Services checkboxes */
+.svc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.svc-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border: 1px solid var(--line);
+  cursor: pointer; font-size: 11px; color: var(--t2);
+  transition: all 0.1s; user-select: none;
+}
+.svc-item:hover { border-color: var(--line2); color: var(--t1); }
+.svc-item.on { background: var(--accent-dim2); border-color: var(--accent); color: #60a5fa; }
+.svc-item input { width: 13px; height: 13px; flex-shrink: 0; accent-color: var(--accent); pointer-events: none; }
+
+/* Detail view */
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); margin-bottom: 14px; }
+.detail-cell { background: var(--bg2); padding: 10px 14px; }
+.detail-label { font-size: 9px; font-weight: 600; letter-spacing: 0.1em; color: var(--t3); text-transform: uppercase; font-family: var(--mono); margin-bottom: 3px; }
+.detail-val { font-size: 12px; color: var(--t1); font-weight: 500; }
+
+/* Cargo items display */
+.cargo-display { border: 1px solid var(--line); overflow: hidden; }
+.cargo-display table { width: 100%; }
+.cargo-display th { background: var(--bg3); }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--t3); }
+.empty-state svg { width: 40px; height: 40px; stroke: var(--t4); fill: none; stroke-width: 1.2; margin-bottom: 12px; }
+.empty-state p { font-size: 13px; margin-bottom: 6px; color: var(--t2); }
+.empty-state span { font-size: 11px; color: var(--t3); }
+
+/* Notification toast */
+.toast {
+  position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+  background: var(--bg3); border: 1px solid var(--line2);
+  padding: 12px 16px; font-size: 12px; color: var(--t1);
+  display: flex; align-items: center; gap: 10px;
+  animation: slideIn 0.2s ease; min-width: 220px;
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+@keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* View panel */
+.view-panel { background: var(--bg2); border: 1px solid var(--line2); }
+.view-panel-head { padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--bg3); display: flex; align-items: center; justify-content: space-between; }
+.view-panel-title { font-size: 12px; font-weight: 600; font-family: var(--mono); color: var(--t1); }
+.view-panel-body { padding: 16px; }
+
+/* Page hidden */
+.page { display: none; }
+.page.active { display: block; }
+
+/* Tabs */
+.tab-bar { display: flex; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+.tab-btn { padding: 9px 16px; font-size: 11px; font-weight: 600; font-family: var(--mono); color: var(--t3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; letter-spacing: 0.06em; text-transform: uppercase; transition: all 0.1s; }
+.tab-btn:hover { color: var(--t1); }
+.tab-btn.active { color: var(--t1); border-bottom-color: var(--accent); }
+
+/* Routing visual */
+.route-vis { background: var(--bg3); border: 1px solid var(--line); padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+.rport { flex: 1; }
+.rcode { font-size: 18px; font-weight: 700; font-family: var(--mono); color: var(--t1); }
+.rname { font-size: 10px; color: var(--t3); }
+.rarrow { flex: 2; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.rarrow-line { width: 100%; height: 1px; background: var(--line2); position: relative; }
+.rarrow-line::after { content: '▶'; position: absolute; right: -6px; top: -7px; font-size: 9px; color: var(--t3); }
+.rmode { font-size: 9px; font-family: var(--mono); color: var(--accent); letter-spacing: 0.08em; }
+
+/* Add cargo row btn */
+.add-cargo-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; font-size: 10px; border: 1px dashed var(--line2); color: var(--t3); background: none; cursor: pointer; margin-top: 4px; transition: all 0.1s; font-family: var(--mono); }
+.add-cargo-btn:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">
+        <div class="brand-icon">
+          <svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="9" rx="0"/><path d="M2 7h12M6 3v9"/></svg>
+        </div>
+        <div>
+          <div class="brand-name">FreightDesk</div>
+          <div class="brand-sub">ENQ MGMT v2.0</div>
+        </div>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="nav-section-label">Main</div>
+      <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard',this)">
+        <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-section-label">Operations</div>
+      <div class="nav-item" data-page="enquiries" onclick="navigate('enquiries',this)">
+        <svg viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12"/><path d="M5 6h6M5 9h4"/></svg>
+        Enquiries
+        <span class="nav-count" id="enq-count">0</span>
+      </div>
+      <div class="nav-item" data-page="quotations" onclick="navigate('quotations',this)">
+        <svg viewBox="0 0 16 16"><path d="M3 2h10l1 2v10H2V4z"/><path d="M5 7h6M5 10h4"/><path d="M10 2v3H5V2"/></svg>
+        Quotations
+        <span class="nav-count" id="quot-count">0</span>
+      </div>
+      <div class="nav-section-label">CRM</div>
+      <div class="nav-item" data-page="clients" onclick="navigate('clients',this)">
+        <svg viewBox="0 0 16 16"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+        Clients
+        <span class="nav-count" id="cli-count">0</span>
+      </div>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar">JD</div>
+      <div>
+        <div class="user-name">John Doe</div>
+        <div class="user-role">Senior Agent</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="page-title" id="topbar-title">DASHBOARD</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-sm" id="topbar-action-btn" style="display:none;" onclick="openCreateModal()">
+          <svg viewBox="0 0 13 13"><path d="M6.5 1v11M1 6.5h11"/></svg>
+          <span id="topbar-action-label">New</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-row" id="stat-cards"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="tbl-wrap">
+            <div class="tbl-header"><span class="tbl-title">RECENT ENQUIRIES</span></div>
+            <div id="dash-recent-enq"></div>
+          </div>
+          <div class="tbl-wrap">
+            <div class="tbl-header"><span class="tbl-title">RECENT QUOTATIONS</span></div>
+            <div id="dash-recent-quot"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENQUIRIES -->
+      <div class="page" id="page-enquiries">
+        <div class="tbl-wrap">
+          <div class="tbl-header">
+            <span class="tbl-title">ALL ENQUIRIES</span>
+            <div class="tbl-tools">
+              <div class="search-box">
+                <svg viewBox="0 0 13 13"><circle cx="5.5" cy="5.5" r="3.5"/><path d="M9 9l2.5 2.5"/></svg>
+                <input type="text" placeholder="Search enquiries..." id="enq-search" oninput="renderEnquiriesTable()" />
+              </div>
+              <select class="filter-sel" id="enq-filter-status" onchange="renderEnquiriesTable()">
+                <option value="">All Status</option>
+                <option>New</option><option>In Progress</option><option>Quoted</option><option>Won</option><option>Lost</option>
+              </select>
+              <select class="filter-sel" id="enq-filter-mode" onchange="renderEnquiriesTable()">
+                <option value="">All Modes</option>
+                <option>Sea Freight</option><option>Air Freight</option><option>Road Transport</option>
+              </select>
+            </div>
+          </div>
+          <div id="enq-table-body"></div>
+        </div>
+      </div>
+
+      <!-- QUOTATIONS -->
+      <div class="page" id="page-quotations">
+        <div class="tbl-wrap">
+          <div class="tbl-header">
+            <span class="tbl-title">ALL QUOTATIONS</span>
+            <div class="tbl-tools">
+              <div class="search-box">
+                <svg viewBox="0 0 13 13"><circle cx="5.5" cy="5.5" r="3.5"/><path d="M9 9l2.5 2.5"/></svg>
+                <input type="text" placeholder="Search quotations..." id="quot-search" oninput="renderQuotationsTable()" />
+              </div>
+              <select class="filter-sel" id="quot-filter-status" onchange="renderQuotationsTable()">
+                <option value="">All Status</option>
+                <option>Draft</option><option>Sent</option><option>Accepted</option><option>Lost</option>
+              </select>
+            </div>
+          </div>
+          <div id="quot-table-body"></div>
+        </div>
+      </div>
+
+      <!-- CLIENTS -->
+      <div class="page" id="page-clients">
+        <div class="tbl-wrap">
+          <div class="tbl-header">
+            <span class="tbl-title">ALL CLIENTS</span>
+            <div class="tbl-tools">
+              <div class="search-box">
+                <svg viewBox="0 0 13 13"><circle cx="5.5" cy="5.5" r="3.5"/><path d="M9 9l2.5 2.5"/></svg>
+                <input type="text" placeholder="Search clients..." id="cli-search" oninput="renderClientsTable()" />
+              </div>
+            </div>
+          </div>
+          <div id="cli-table-body"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODALS ═══════════════════ -->
+
+<!-- ENQUIRY MODAL -->
+<div class="modal-overlay" id="modal-enquiry" style="display:none;">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title" id="modal-enq-title">NEW ENQUIRY</span>
+      <button class="modal-close" onclick="closeModal('modal-enquiry')"><svg viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="enq-id-field" />
+      <div class="form-section"><span class="form-section-title">Basic Information</span></div>
+      <div class="form-grid fg2">
+        <div class="field">
+          <label>Customer <span class="req">*</span></label>
+          <select id="enq-customer">
+            <option value="">— Select Client —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Enquiry ID</label>
+          <input type="text" id="enq-ref" placeholder="Auto-generated" readonly style="color:var(--t3);" />
+        </div>
+        <div class="field">
+          <label>Shipment Type <span class="req">*</span></label>
+          <div class="radio-row">
+            <div class="radio-opt on" onclick="setRadio('shiptype',this,'Import')">Import</div>
+            <div class="radio-opt" onclick="setRadio('shiptype',this,'Export')">Export</div>
+          </div>
+          <input type="hidden" id="enq-shiptype" value="Import" />
+        </div>
+        <div class="field">
+          <label>Priority</label>
+          <select id="enq-priority">
+            <option>Normal</option><option>High</option><option>Urgent</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Cargo Ready Date</label>
+          <input type="date" id="enq-ready-date" />
+        </div>
+        <div class="field">
+          <label>Valid Till</label>
+          <input type="date" id="enq-valid-till" />
+        </div>
+        <div class="field">
+          <label>Incoterms</label>
+          <select id="enq-incoterms">
+            <option>FOB</option><option>EXW</option><option>CIF</option><option>CFR</option><option>DAP</option><option>DDP</option><option>CPT</option><option>CIP</option><option>FCA</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Sales Owner</label>
+          <select id="enq-owner">
+            <option>John Doe</option><option>Jane Smith</option><option>Rajesh Kumar</option><option>Meena S.</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section" style="margin-top:14px;"><span class="form-section-title">Routing & Mode</span></div>
+      <div class="route-vis" id="enq-route-vis">
+        <div class="rport"><div class="rcode" id="rv-pol">—</div><div class="rname">Origin</div></div>
+        <div class="rarrow"><div class="rmode" id="rv-mode">SEA</div><div class="rarrow-line"></div></div>
+        <div class="rport" style="text-align:right;"><div class="rcode" id="rv-pod">—</div><div class="rname">Destination</div></div>
+      </div>
+      <div class="form-grid fg2">
+        <div class="field">
+          <label>Port of Loading (POL) <span class="req">*</span></label>
+          <input type="text" id="enq-pol" placeholder="e.g. MAA — Chennai" oninput="updateRouteVis()" />
+        </div>
+        <div class="field">
+          <label>Port of Discharge (POD) <span class="req">*</span></label>
+          <input type="text" id="enq-pod" placeholder="e.g. HKG — Hong Kong" oninput="updateRouteVis()" />
+        </div>
+        <div class="field full">
+          <label>Mode of Transport <span class="req">*</span></label>
+          <div class="mode-row">
+            <div class="mode-btn on" onclick="setMode(this,'Sea Freight')">
+              <svg viewBox="0 0 12 12"><path d="M1 8h10l-1-3H2z"/><path d="M1 8l-0.5 2h11L11 8"/></svg>Sea Freight
+            </div>
+            <div class="mode-btn" onclick="setMode(this,'Air Freight')">
+              <svg viewBox="0 0 12 12"><path d="M2 7l7-4-1 4-3 1-1 2-1-2-2-1z"/></svg>Air Freight
+            </div>
+            <div class="mode-btn" onclick="setMode(this,'Road Transport')">
+              <svg viewBox="0 0 12 12"><rect x="1" y="5" width="7" height="4" rx="0"/><path d="M8 7h2l1 1.5V9H8V7z"/><circle cx="3" cy="10" r="1"/><circle cx="7" cy="10" r="1"/></svg>Road Transport
+            </div>
+          </div>
+          <input type="hidden" id="enq-mode" value="Sea Freight" />
+        </div>
+      </div>
+
+      <div class="form-section" style="margin-top:14px;"><span class="form-section-title">Cargo Details</span></div>
+      <table class="cargo-tbl">
+        <thead><tr>
+          <th>Description</th><th>Pkg Type</th><th>Qty</th><th>Wt (kg)</th><th>Vol (CBM)</th><th>Dims (cm)</th><th></th>
+        </tr></thead>
+        <tbody id="cargo-rows"></tbody>
+      </table>
+      <button class="add-cargo-btn" onclick="addCargoRow()">+ ADD LINE</button>
+
+      <div class="form-grid fg3" style="margin-top:12px;">
+        <div class="field">
+          <label>Cargo Type</label>
+          <select id="enq-cargo-type"><option>General</option><option>Dangerous Goods</option><option>Refrigerated</option><option>Oversized/OOG</option><option>Perishables</option></select>
+        </div>
+        <div class="field">
+          <label>HS Code</label>
+          <input type="text" id="enq-hscode" placeholder="e.g. 8542.31" />
+        </div>
+        <div class="field">
+          <label>Declared Value (USD)</label>
+          <input type="number" id="enq-value" placeholder="0.00" />
+        </div>
+      </div>
+
+      <div class="form-section" style="margin-top:14px;"><span class="form-section-title">Additional Services</span></div>
+      <div class="svc-grid" id="services-grid">
+        <div class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" />Cargo Insurance</div>
+        <div class="svc-item on" onclick="toggleSvc(this)"><input type="checkbox" checked />Customs Clearance (Origin)</div>
+        <div class="svc-item on" onclick="toggleSvc(this)"><input type="checkbox" checked />Customs Clearance (Dest.)</div>
+        <div class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" />Inland Transport Origin</div>
+        <div class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" />Inland Transport Dest.</div>
+        <div class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" />Fumigation</div>
+        <div class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" />Palletization</div>
+        <div class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" />Warehousing</div>
+        <div class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" />Crane Loading</div>
+        <div class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" />Stuffing</div>
+      </div>
+
+      <div class="form-section" style="margin-top:14px;"><span class="form-section-title">Notes</span></div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Special Instructions</label>
+          <textarea id="enq-notes" placeholder="Any special handling, DG class, temperature range, etc."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-enquiry')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEnquiry()">
+        <svg viewBox="0 0 13 13"><path d="M2 7l3.5 3.5L11 3"/></svg>
+        Save Enquiry
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- QUOTATION MODAL -->
+<div class="modal-overlay" id="modal-quotation" style="display:none;">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title" id="modal-quot-title">NEW QUOTATION</span>
+      <button class="modal-close" onclick="closeModal('modal-quotation')"><svg viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="quot-id-field" />
+      <div class="form-grid fg2">
+        <div class="field">
+          <label>Client <span class="req">*</span></label>
+          <select id="quot-client"><option value="">— Select Client —</option></select>
+        </div>
+        <div class="field">
+          <label>Linked Enquiry</label>
+          <select id="quot-enq-link"><option value="">— Optional —</option></select>
+        </div>
+        <div class="field">
+          <label>Quote Ref</label>
+          <input type="text" id="quot-ref" placeholder="Auto-generated" readonly style="color:var(--t3);" />
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="quot-status"><option>Draft</option><option>Sent</option><option>Accepted</option><option>Lost</option></select>
+        </div>
+        <div class="field">
+          <label>Origin</label>
+          <input type="text" id="quot-origin" placeholder="e.g. Chennai, India" />
+        </div>
+        <div class="field">
+          <label>Destination</label>
+          <input type="text" id="quot-dest" placeholder="e.g. Los Angeles, USA" />
+        </div>
+        <div class="field">
+          <label>Mode</label>
+          <select id="quot-mode"><option>Sea Freight</option><option>Air Freight</option><option>Road Transport</option></select>
+        </div>
+        <div class="field">
+          <label>Valid Till</label>
+          <input type="date" id="quot-valid" />
+        </div>
+      </div>
+
+      <div class="form-section" style="margin-top:14px;"><span class="form-section-title">Charges</span></div>
+      <table class="cargo-tbl" id="charges-tbl">
+        <thead><tr><th>Charge Description</th><th>Unit</th><th>Qty</th><th>Rate (USD)</th><th>Amount</th><th></th></tr></thead>
+        <tbody id="charges-rows"></tbody>
+      </table>
+      <button class="add-cargo-btn" onclick="addChargeRow()">+ ADD CHARGE</button>
+      <div style="margin-top:10px;display:flex;justify-content:flex-end;gap:14px;padding:10px;background:var(--bg3);border:1px solid var(--line);">
+        <span style="font-size:11px;color:var(--t3);">TOTAL (USD)</span>
+        <span style="font-size:14px;font-weight:700;font-family:var(--mono);color:var(--t1);" id="quot-total">$0.00</span>
+      </div>
+
+      <div class="form-grid" style="margin-top:12px;">
+        <div class="field">
+          <label>Terms & Conditions</label>
+          <textarea id="quot-terms" placeholder="Quote validity, payment terms, excluded charges..."></textarea>
+        </div>
+        <div class="field">
+          <label>Internal Notes</label>
+          <textarea id="quot-notes" placeholder="Internal notes..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-quotation')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveQuotation()">
+        <svg viewBox="0 0 13 13"><path d="M2 7l3.5 3.5L11 3"/></svg>
+        Save Quotation
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENT MODAL -->
+<div class="modal-overlay" id="modal-client" style="display:none;">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-head">
+      <span class="modal-title" id="modal-cli-title">NEW CLIENT</span>
+      <button class="modal-close" onclick="closeModal('modal-client')"><svg viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="cli-id-field" />
+      <div class="form-grid fg2">
+        <div class="field full">
+          <label>Company Name <span class="req">*</span></label>
+          <input type="text" id="cli-company" placeholder="e.g. Apex Exports Pvt Ltd" />
+        </div>
+        <div class="field">
+          <label>Contact Person <span class="req">*</span></label>
+          <input type="text" id="cli-contact" placeholder="Full name" />
+        </div>
+        <div class="field">
+          <label>Designation</label>
+          <input type="text" id="cli-designation" placeholder="e.g. Logistics Manager" />
+        </div>
+        <div class="field">
+          <label>Email <span class="req">*</span></label>
+          <input type="email" id="cli-email" placeholder="contact@company.com" />
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <input type="tel" id="cli-phone" placeholder="+91 98765 43210" />
+        </div>
+        <div class="field">
+          <label>Country</label>
+          <select id="cli-country">
+            <option>India</option><option>USA</option><option>UK</option><option>China</option><option>Singapore</option><option>UAE</option><option>Germany</option><option>Australia</option><option>Japan</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Industry</label>
+          <select id="cli-industry">
+            <option>Manufacturing</option><option>Trading</option><option>Retail</option><option>Automotive</option><option>Pharmaceuticals</option><option>Electronics</option><option>Textiles</option><option>Agriculture</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>Address</label>
+          <textarea id="cli-address" placeholder="Full address..." style="min-height:52px;"></textarea>
+        </div>
+        <div class="field">
+          <label>GSTIN / Tax ID</label>
+          <input type="text" id="cli-tax" placeholder="Tax identification" />
+        </div>
+        <div class="field">
+          <label>Credit Limit (USD)</label>
+          <input type="number" id="cli-credit" placeholder="0" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-client')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveClient()">
+        <svg viewBox="0 0 13 13"><path d="M2 7l3.5 3.5L11 3"/></svg>
+        Save Client
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW MODALS -->
+<div class="modal-overlay" id="modal-view-enq" style="display:none;">
+  <div class="modal" style="max-width:680px;">
+    <div class="modal-head">
+      <span class="modal-title" id="view-enq-title">ENQUIRY DETAIL</span>
+      <button class="modal-close" onclick="closeModal('modal-view-enq')"><svg viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="modal-body" id="view-enq-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" id="view-enq-del">Delete</button>
+      <button class="btn btn-sm" id="view-enq-edit">Edit</button>
+      <button class="btn btn-primary btn-sm" id="view-enq-create-quot">Create Quotation</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-view-quot" style="display:none;">
+  <div class="modal" style="max-width:680px;">
+    <div class="modal-head">
+      <span class="modal-title" id="view-quot-title">QUOTATION DETAIL</span>
+      <button class="modal-close" onclick="closeModal('modal-view-quot')"><svg viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="modal-body" id="view-quot-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" id="view-quot-del">Delete</button>
+      <button class="btn btn-sm" id="view-quot-edit">Edit</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-view-cli" style="display:none;">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-head">
+      <span class="modal-title" id="view-cli-title">CLIENT DETAIL</span>
+      <button class="modal-close" onclick="closeModal('modal-view-cli')"><svg viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="modal-body" id="view-cli-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" id="view-cli-del">Delete</button>
+      <button class="btn btn-sm" id="view-cli-edit">Edit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════ DATA LAYER ═══════════════════
+const DB = {
+  get: k => { try { return JSON.parse(localStorage.getItem('fd_'+k)||'[]'); } catch(e){ return []; } },
+  set: (k,v) => localStorage.setItem('fd_'+k, JSON.stringify(v)),
+};
+
+let enquiries = DB.get('enquiries');
+let quotations = DB.get('quotations');
+let clients = DB.get('clients');
+
+function save() {
+  DB.set('enquiries', enquiries);
+  DB.set('quotations', quotations);
+  DB.set('clients', clients);
+  updateCounts();
+}
+
+// Seed demo data if empty
+function seedData() {
+  if (clients.length === 0) {
+    clients = [
+      { id:'C001', company:'Apex Exports Pvt Ltd', contact:'Ananya Sharma', designation:'Logistics Head', email:'ananya@apexexports.com', phone:'+91 98765 43210', country:'India', industry:'Manufacturing', address:'12 Industrial Estate, Chennai 600001', tax:'29AABCA1234Z1Z5', credit:50000, createdAt:'2025-10-01' },
+      { id:'C002', company:'Global Traders Co.', contact:'David Chen', designation:'Procurement Mgr', email:'david@globaltraders.com', phone:'+1 213 555 0198', country:'USA', industry:'Trading', address:'500 Commerce Blvd, Los Angeles CA 90001', tax:'EIN 98-7654321', credit:75000, createdAt:'2025-10-15' },
+      { id:'C003', company:'TechShip International', contact:'Klaus Mueller', designation:'Supply Chain Dir.', email:'k.mueller@techship.de', phone:'+49 89 123456', country:'Germany', industry:'Electronics', address:'Industriestrasse 22, 80339 Munich', tax:'DE123456789', credit:100000, createdAt:'2025-11-01' },
+    ];
+  }
+  if (enquiries.length === 0) {
+    enquiries = [
+      { id:'ENQ-2025-001', customer:'C001', shiptype:'Export', mode:'Sea Freight', pol:'MAA — Chennai', pod:'HKG — Hong Kong', incoterms:'FOB', priority:'Normal', status:'Quoted', cargoType:'General', hscode:'8542.31', value:25000, cargo:[{desc:'Electronic Components',pkg:'Cartons',qty:24,wt:480,cbm:2.4,dims:'60x40x30'}], services:['Customs Clearance (Origin)','Customs Clearance (Dest.)'], notes:'Handle with care', owner:'John Doe', readyDate:'2025-12-01', validTill:'2025-12-31', createdAt:'2025-11-10' },
+      { id:'ENQ-2025-002', customer:'C002', shiptype:'Import', mode:'Air Freight', pol:'LAX — Los Angeles', pod:'MAA — Chennai', incoterms:'CIF', priority:'High', status:'New', cargoType:'General', hscode:'', value:8000, cargo:[{desc:'Auto Parts',pkg:'Pallets',qty:4,wt:1200,cbm:6.0,dims:'120x80x100'}], services:['Cargo Insurance','Customs Clearance (Dest.)'], notes:'', owner:'Jane Smith', readyDate:'2025-12-10', validTill:'2026-01-10', createdAt:'2025-11-15' },
+      { id:'ENQ-2025-003', customer:'C003', shiptype:'Export', mode:'Sea Freight', pol:'FRA — Frankfurt', pod:'SIN — Singapore', incoterms:'DAP', priority:'Urgent', status:'In Progress', cargoType:'Refrigerated', hscode:'0201', value:45000, cargo:[{desc:'Pharmaceutical',pkg:'Cartons',qty:100,wt:2000,cbm:10.0,dims:'50x40x30'}], services:['Cargo Insurance','Customs Clearance (Origin)','Customs Clearance (Dest.)','Fumigation'], notes:'Temperature: 2-8°C', owner:'Rajesh Kumar', readyDate:'2025-12-05', validTill:'2025-12-20', createdAt:'2025-11-18' },
+    ];
+  }
+  if (quotations.length === 0) {
+    quotations = [
+      { id:'QT-2025-001', client:'C001', enquiryLink:'ENQ-2025-001', ref:'QT-2025-001', status:'Sent', origin:'Chennai, India', dest:'Hong Kong', mode:'Sea Freight', validTill:'2025-12-31', charges:[{desc:'Ocean Freight',unit:'Container',qty:1,rate:2500,amount:2500},{desc:'Origin THC',unit:'BL',qty:1,rate:180,amount:180},{desc:'Documentation Fee',unit:'BL',qty:1,rate:75,amount:75}], total:2755, terms:'Quote valid 30 days. Subject to space availability.', notes:'Priority booking', createdAt:'2025-11-12' },
+      { id:'QT-2025-002', client:'C002', enquiryLink:'ENQ-2025-002', ref:'QT-2025-002', status:'Draft', origin:'Los Angeles, USA', dest:'Chennai', mode:'Air Freight', validTill:'2026-01-10', charges:[{desc:'Air Freight',unit:'kg',qty:1200,rate:3.5,amount:4200},{desc:'Fuel Surcharge',unit:'kg',qty:1200,rate:0.8,amount:960},{desc:'Airport Handling',unit:'shipment',qty:1,rate:250,amount:250}], total:5410, terms:'', notes:'', createdAt:'2025-11-16' },
+    ];
+  }
+  save();
+}
+
+// ═══════════════════ NAVIGATION ═══════════════════
+const pageConfig = {
+  dashboard: { title:'DASHBOARD', action:false },
+  enquiries: { title:'ENQUIRIES', action:true, label:'New Enquiry' },
+  quotations: { title:'QUOTATIONS', action:true, label:'New Quotation' },
+  clients: { title:'CLIENTS', action:true, label:'New Client' },
+};
+let currentPage = 'dashboard';
+
+function navigate(page, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  currentPage = page;
+  const cfg = pageConfig[page];
+  document.getElementById('topbar-title').textContent = cfg.title;
+  const ab = document.getElementById('topbar-action-btn');
+  if (cfg.action) { ab.style.display='inline-flex'; document.getElementById('topbar-action-label').textContent=cfg.label; }
+  else { ab.style.display='none'; }
+  if (page==='dashboard') renderDashboard();
+  if (page==='enquiries') renderEnquiriesTable();
+  if (page==='quotations') renderQuotationsTable();
+  if (page==='clients') renderClientsTable();
+}
+
+function openCreateModal() {
+  if (currentPage==='enquiries') openEnquiryModal();
+  if (currentPage==='quotations') openQuotationModal();
+  if (currentPage==='clients') openClientModal();
+}
+
+// ═══════════════════ HELPERS ═══════════════════
+function uid(prefix) {
+  const now = new Date();
+  const year = now.getFullYear();
+  const seq = String(Math.floor(Math.random()*9000)+1000);
+  return `${prefix}-${year}-${seq}`;
+}
+function today() { return new Date().toISOString().split('T')[0]; }
+function fmtDate(d) { if(!d) return '—'; const dt=new Date(d); return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}); }
+function fmtAmt(n) { return '$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function clientName(id) { const c=clients.find(x=>x.id===id); return c?c.company:'—'; }
+
+function badge(status) {
+  const map = {
+    'New':'badge-new','In Progress':'badge-progress','Quoted':'badge-quoted','Won':'badge-won','Lost':'badge-lost',
+    'Draft':'badge-draft','Sent':'badge-sent','Accepted':'badge-accepted',
+    'Sea Freight':'badge-sea','Air Freight':'badge-air','Road Transport':'badge-road',
+    'Normal':'badge-draft','High':'badge-progress','Urgent':'badge-lost'
+  };
+  return `<span class="badge ${map[status]||'badge-draft'}">${status}</span>`;
+}
+
+function toast(msg, type='success') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
+}
+
+function updateCounts() {
+  document.getElementById('enq-count').textContent = enquiries.length;
+  document.getElementById('quot-count').textContent = quotations.length;
+  document.getElementById('cli-count').textContent = clients.length;
+}
+
+// ═══════════════════ DASHBOARD ═══════════════════
+function renderDashboard() {
+  const won = quotations.filter(q=>q.status==='Accepted').reduce((s,q)=>s+(q.total||0),0);
+  document.getElementById('stat-cards').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Total Enquiries</div><div class="stat-val">${enquiries.length}</div><div class="stat-sub"><span class="stat-dot" style="background:#2563eb"></span>Active pipeline</div></div>
+    <div class="stat-card"><div class="stat-label">Quotations</div><div class="stat-val">${quotations.length}</div><div class="stat-sub"><span class="stat-dot" style="background:#0891b2"></span>${quotations.filter(q=>q.status==='Sent').length} sent</div></div>
+    <div class="stat-card"><div class="stat-label">Clients</div><div class="stat-val">${clients.length}</div><div class="stat-sub"><span class="stat-dot" style="background:#16a34a"></span>Active accounts</div></div>
+    <div class="stat-card"><div class="stat-label">Revenue (USD)</div><div class="stat-val">${fmtAmt(won)}</div><div class="stat-sub"><span class="stat-dot" style="background:#d97706"></span>Accepted quotes</div></div>
+  `;
+
+  const recentEnq = [...enquiries].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,5);
+  document.getElementById('dash-recent-enq').innerHTML = recentEnq.length ? `
+    <table><thead><tr><th>Ref</th><th>Client</th><th>Mode</th><th>Status</th></tr></thead>
+    <tbody>${recentEnq.map(e=>`<tr onclick="viewEnquiry('${e.id}')"><td class="td-primary td-mono">${e.id}</td><td>${clientName(e.customer)}</td><td>${badge(e.mode)}</td><td>${badge(e.status)}</td></tr>`).join('')}</tbody></table>
+  ` : `<div class="empty-state"><p>No enquiries yet</p></div>`;
+
+  const recentQuot = [...quotations].sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,5);
+  document.getElementById('dash-recent-quot').innerHTML = recentQuot.length ? `
+    <table><thead><tr><th>Ref</th><th>Client</th><th>Total</th><th>Status</th></tr></thead>
+    <tbody>${recentQuot.map(q=>`<tr onclick="viewQuotation('${q.id}')"><td class="td-primary td-mono">${q.ref}</td><td>${clientName(q.client)}</td><td class="td-mono">${fmtAmt(q.total)}</td><td>${badge(q.status)}</td></tr>`).join('')}</tbody></table>
+  ` : `<div class="empty-state"><p>No quotations yet</p></div>`;
+}
+
+// ═══════════════════ ENQUIRIES TABLE ═══════════════════
+function renderEnquiriesTable() {
+  const search = (document.getElementById('enq-search')||{}).value?.toLowerCase()||'';
+  const fStatus = (document.getElementById('enq-filter-status')||{}).value||'';
+  const fMode = (document.getElementById('enq-filter-mode')||{}).value||'';
+  let data = enquiries.filter(e => {
+    const cn = clientName(e.customer).toLowerCase();
+    const match = !search || e.id.toLowerCase().includes(search) || cn.includes(search) || (e.pol||'').toLowerCase().includes(search) || (e.pod||'').toLowerCase().includes(search);
+    const matchS = !fStatus || e.status===fStatus;
+    const matchM = !fMode || e.mode===fMode;
+    return match && matchS && matchM;
+  }).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+
+  document.getElementById('enq-table-body').innerHTML = data.length ? `
+    <table>
+      <thead><tr><th>Enquiry ID</th><th>Client</th><th>Shipment</th><th>Mode</th><th>POL</th><th>POD</th><th>Priority</th><th>Status</th><th>Created</th><th></th></tr></thead>
+      <tbody>${data.map(e=>`
+        <tr onclick="viewEnquiry('${e.id}')">
+          <td class="td-primary td-mono">${e.id}</td>
+          <td class="td-primary">${clientName(e.customer)}</td>
+          <td>${e.shiptype}</td>
+          <td>${badge(e.mode)}</td>
+          <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.pol||'—'}</td>
+          <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.pod||'—'}</td>
+          <td>${badge(e.priority)}</td>
+          <td>${badge(e.status)}</td>
+          <td class="td-mono">${fmtDate(e.createdAt)}</td>
+          <td><div class="row-actions">
+            <button class="btn btn-sm btn-icon" onclick="event.stopPropagation();editEnquiry('${e.id}')"><svg viewBox="0 0 13 13" width="11" height="11"><path d="M2 9V11h2L10 5 8 3 2 9z"/><path d="M8.5 1.5l1.5 1.5"/></svg></button>
+            <button class="btn btn-sm btn-icon btn-danger" onclick="event.stopPropagation();deleteEnquiry('${e.id}')"><svg viewBox="0 0 13 13" width="11" height="11"><path d="M2 3h9M5 3V2h3v1M4 3l.5 8h4L9 3"/></svg></button>
+          </div></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  ` : `<div class="empty-state">
+    <svg viewBox="0 0 40 40"><rect x="6" y="4" width="28" height="32" rx="0"/><path d="M12 14h16M12 20h12M12 26h8"/></svg>
+    <p>No enquiries found</p><span>Create your first enquiry to get started</span>
+  </div>`;
+}
+
+// ═══════════════════ QUOTATIONS TABLE ═══════════════════
+function renderQuotationsTable() {
+  const search = (document.getElementById('quot-search')||{}).value?.toLowerCase()||'';
+  const fStatus = (document.getElementById('quot-filter-status')||{}).value||'';
+  let data = quotations.filter(q => {
+    const cn = clientName(q.client).toLowerCase();
+    const match = !search || q.ref.toLowerCase().includes(search) || cn.includes(search);
+    const matchS = !fStatus || q.status===fStatus;
+    return match && matchS;
+  }).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+
+  document.getElementById('quot-table-body').innerHTML = data.length ? `
+    <table>
+      <thead><tr><th>Quote Ref</th><th>Client</th><th>Origin</th><th>Destination</th><th>Mode</th><th>Total (USD)</th><th>Valid Till</th><th>Status</th><th></th></tr></thead>
+      <tbody>${data.map(q=>`
+        <tr onclick="viewQuotation('${q.id}')">
+          <td class="td-primary td-mono">${q.ref}</td>
+          <td class="td-primary">${clientName(q.client)}</td>
+          <td>${q.origin||'—'}</td>
+          <td>${q.dest||'—'}</td>
+          <td>${badge(q.mode)}</td>
+          <td class="td-mono td-primary">${fmtAmt(q.total)}</td>
+          <td class="td-mono">${fmtDate(q.validTill)}</td>
+          <td>${badge(q.status)}</td>
+          <td><div class="row-actions">
+            <button class="btn btn-sm btn-icon" onclick="event.stopPropagation();editQuotation('${q.id}')"><svg viewBox="0 0 13 13" width="11" height="11"><path d="M2 9V11h2L10 5 8 3 2 9z"/><path d="M8.5 1.5l1.5 1.5"/></svg></button>
+            <button class="btn btn-sm btn-icon btn-danger" onclick="event.stopPropagation();deleteQuotation('${q.id}')"><svg viewBox="0 0 13 13" width="11" height="11"><path d="M2 3h9M5 3V2h3v1M4 3l.5 8h4L9 3"/></svg></button>
+          </div></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  ` : `<div class="empty-state">
+    <svg viewBox="0 0 40 40"><path d="M8 4h24l4 4v28H4V8z"/><path d="M12 16h16M12 22h12M12 28h8"/></svg>
+    <p>No quotations found</p><span>Create a quotation from an enquiry or directly</span>
+  </div>`;
+}
+
+// ═══════════════════ CLIENTS TABLE ═══════════════════
+function renderClientsTable() {
+  const search = (document.getElementById('cli-search')||{}).value?.toLowerCase()||'';
+  let data = clients.filter(c => !search || c.company.toLowerCase().includes(search) || c.contact.toLowerCase().includes(search) || c.email.toLowerCase().includes(search));
+
+  document.getElementById('cli-table-body').innerHTML = data.length ? `
+    <table>
+      <thead><tr><th>Client ID</th><th>Company</th><th>Contact</th><th>Email</th><th>Country</th><th>Industry</th><th>Credit Limit</th><th>Enquiries</th><th></th></tr></thead>
+      <tbody>${data.map(c=>{
+        const enqCount = enquiries.filter(e=>e.customer===c.id).length;
+        return `<tr onclick="viewClient('${c.id}')">
+          <td class="td-mono td-primary">${c.id}</td>
+          <td class="td-primary">${c.company}</td>
+          <td>${c.contact}</td>
+          <td style="color:var(--accent);">${c.email}</td>
+          <td>${c.country}</td>
+          <td>${c.industry}</td>
+          <td class="td-mono">${fmtAmt(c.credit)}</td>
+          <td class="td-mono">${enqCount}</td>
+          <td><div class="row-actions">
+            <button class="btn btn-sm btn-icon" onclick="event.stopPropagation();editClient('${c.id}')"><svg viewBox="0 0 13 13" width="11" height="11"><path d="M2 9V11h2L10 5 8 3 2 9z"/><path d="M8.5 1.5l1.5 1.5"/></svg></button>
+            <button class="btn btn-sm btn-icon btn-danger" onclick="event.stopPropagation();deleteClient('${c.id}')"><svg viewBox="0 0 13 13" width="11" height="11"><path d="M2 3h9M5 3V2h3v1M4 3l.5 8h4L9 3"/></svg></button>
+          </div></td>
+        </tr>`;
+      }).join('')}
+      </tbody>
+    </table>
+  ` : `<div class="empty-state">
+    <svg viewBox="0 0 40 40"><circle cx="20" cy="14" r="8"/><path d="M4 36c0-8.8 7.2-16 16-16s16 7.2 16 16"/></svg>
+    <p>No clients found</p><span>Add your first client to start managing enquiries</span>
+  </div>`;
+}
+
+// ═══════════════════ ENQUIRY MODAL ═══════════════════
+function populateClientDropdowns() {
+  const opts = clients.map(c=>`<option value="${c.id}">${c.company}</option>`).join('');
+  document.getElementById('enq-customer').innerHTML = '<option value="">— Select Client —</option>' + opts;
+  document.getElementById('quot-client').innerHTML = '<option value="">— Select Client —</option>' + opts;
+  const enqOpts = enquiries.map(e=>`<option value="${e.id}">${e.id} — ${clientName(e.customer)}</option>`).join('');
+  document.getElementById('quot-enq-link').innerHTML = '<option value="">— Optional —</option>' + enqOpts;
+}
+
+function openEnquiryModal(prefill) {
+  populateClientDropdowns();
+  document.getElementById('modal-enq-title').textContent = 'NEW ENQUIRY';
+  document.getElementById('enq-id-field').value = '';
+  document.getElementById('enq-ref').value = uid('ENQ');
+  document.getElementById('enq-customer').value = prefill?.customer || '';
+  document.getElementById('enq-shiptype').value = 'Import';
+  document.getElementById('enq-priority').value = 'Normal';
+  document.getElementById('enq-incoterms').value = 'FOB';
+  document.getElementById('enq-owner').value = 'John Doe';
+  document.getElementById('enq-ready-date').value = '';
+  document.getElementById('enq-valid-till').value = '';
+  document.getElementById('enq-pol').value = '';
+  document.getElementById('enq-pod').value = '';
+  document.getElementById('enq-mode').value = 'Sea Freight';
+  document.getElementById('enq-cargo-type').value = 'General';
+  document.getElementById('enq-hscode').value = '';
+  document.getElementById('enq-value').value = '';
+  document.getElementById('enq-notes').value = '';
+  // Reset radios/mode buttons
+  document.querySelectorAll('.radio-opt').forEach(r=>r.classList.remove('on'));
+  document.querySelector('.radio-opt').classList.add('on');
+  document.querySelectorAll('.mode-btn').forEach(m=>m.classList.remove('on'));
+  document.querySelector('.mode-btn').classList.add('on');
+  // Reset services
+  document.querySelectorAll('#services-grid .svc-item').forEach(s=>{ s.classList.remove('on'); s.querySelector('input').checked=false; });
+  document.querySelectorAll('#services-grid .svc-item').forEach((s,i)=>{ if(i===1||i===2){s.classList.add('on');s.querySelector('input').checked=true;} });
+  // Reset cargo
+  document.getElementById('cargo-rows').innerHTML = '';
+  addCargoRow();
+  updateRouteVis();
+  document.getElementById('modal-enquiry').style.display = 'flex';
+}
+
+function editEnquiry(id) {
+  const e = enquiries.find(x=>x.id===id);
+  if(!e) return;
+  populateClientDropdowns();
+  closeModal('modal-view-enq');
+  document.getElementById('modal-enq-title').textContent = 'EDIT ENQUIRY';
+  document.getElementById('enq-id-field').value = e.id;
+  document.getElementById('enq-ref').value = e.id;
+  document.getElementById('enq-customer').value = e.customer;
+  document.getElementById('enq-shiptype').value = e.shiptype;
+  document.getElementById('enq-priority').value = e.priority;
+  document.getElementById('enq-incoterms').value = e.incoterms;
+  document.getElementById('enq-owner').value = e.owner;
+  document.getElementById('enq-ready-date').value = e.readyDate||'';
+  document.getElementById('enq-valid-till').value = e.validTill||'';
+  document.getElementById('enq-pol').value = e.pol||'';
+  document.getElementById('enq-pod').value = e.pod||'';
+  document.getElementById('enq-mode').value = e.mode;
+  document.getElementById('enq-cargo-type').value = e.cargoType;
+  document.getElementById('enq-hscode').value = e.hscode||'';
+  document.getElementById('enq-value').value = e.value||'';
+  document.getElementById('enq-notes').value = e.notes||'';
+  // Radio
+  document.querySelectorAll('.radio-opt').forEach(r=>{ r.classList.toggle('on', r.textContent.trim()===e.shiptype); });
+  // Mode
+  document.querySelectorAll('.mode-btn').forEach(m=>{ m.classList.toggle('on', m.textContent.trim()===e.mode); });
+  // Services
+  const svcs = e.services||[];
+  document.querySelectorAll('#services-grid .svc-item').forEach(s=>{ const t=s.textContent.trim(); const on=svcs.includes(t); s.classList.toggle('on',on); s.querySelector('input').checked=on; });
+  // Cargo
+  document.getElementById('cargo-rows').innerHTML = '';
+  (e.cargo||[]).forEach(c=>addCargoRow(c));
+  updateRouteVis();
+  document.getElementById('modal-enquiry').style.display = 'flex';
+}
+
+function saveEnquiry() {
+  const customer = document.getElementById('enq-customer').value;
+  const pol = document.getElementById('enq-pol').value;
+  const pod = document.getElementById('enq-pod').value;
+  if(!customer) { toast('Please select a client','error'); return; }
+  if(!pol||!pod) { toast('Please enter POL and POD','error'); return; }
+
+  const cargoRows = Array.from(document.querySelectorAll('#cargo-rows tr')).map(tr=>{
+    const inputs = tr.querySelectorAll('input,select');
+    return { desc:inputs[0].value, pkg:inputs[1].value, qty:inputs[2].value, wt:inputs[3].value, cbm:inputs[4].value, dims:inputs[5].value };
+  });
+  const services = Array.from(document.querySelectorAll('#services-grid .svc-item.on')).map(s=>s.textContent.trim());
+  const existingId = document.getElementById('enq-id-field').value;
+
+  const obj = {
+    id: existingId || document.getElementById('enq-ref').value,
+    customer, shiptype: document.getElementById('enq-shiptype').value,
+    mode: document.getElementById('enq-mode').value,
+    pol, pod,
+    incoterms: document.getElementById('enq-incoterms').value,
+    priority: document.getElementById('enq-priority').value,
+    status: existingId ? (enquiries.find(x=>x.id===existingId)||{}).status||'New' : 'New',
+    cargoType: document.getElementById('enq-cargo-type').value,
+    hscode: document.getElementById('enq-hscode').value,
+    value: document.getElementById('enq-value').value,
+    cargo: cargoRows, services,
+    notes: document.getElementById('enq-notes').value,
+    owner: document.getElementById('enq-owner').value,
+    readyDate: document.getElementById('enq-ready-date').value,
+    validTill: document.getElementById('enq-valid-till').value,
+    createdAt: existingId ? (enquiries.find(x=>x.id===existingId)||{}).createdAt||today() : today(),
+  };
+
+  if(existingId) { const idx=enquiries.findIndex(x=>x.id===existingId); enquiries[idx]=obj; }
+  else { enquiries.unshift(obj); }
+  save();
+  closeModal('modal-enquiry');
+  toast(existingId ? 'Enquiry updated' : 'Enquiry created');
+  if(currentPage==='enquiries') renderEnquiriesTable();
+  if(currentPage==='dashboard') renderDashboard();
+}
+
+function deleteEnquiry(id) {
+  if(!confirm('Delete this enquiry?')) return;
+  enquiries = enquiries.filter(x=>x.id!==id);
+  save(); closeModal('modal-view-enq');
+  toast('Enquiry deleted'); renderEnquiriesTable();
+}
+
+// ═══════════════════ VIEW ENQUIRY ═══════════════════
+function viewEnquiry(id) {
+  const e = enquiries.find(x=>x.id===id);
+  if(!e) return;
+  document.getElementById('view-enq-title').textContent = e.id;
+  const cargoHtml = (e.cargo||[]).length ? `
+    <div class="cargo-display"><table>
+      <thead><tr><th>Description</th><th>Pkg</th><th>Qty</th><th>Wt (kg)</th><th>Vol (CBM)</th><th>Dims</th></tr></thead>
+      <tbody>${(e.cargo).map(c=>`<tr><td>${c.desc}</td><td>${c.pkg}</td><td>${c.qty}</td><td>${c.wt}</td><td>${c.cbm}</td><td>${c.dims||'—'}</td></tr>`).join('')}</tbody>
+    </table></div>
+  ` : '—';
+  document.getElementById('view-enq-body').innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-cell"><div class="detail-label">Enquiry ID</div><div class="detail-val" style="font-family:var(--mono)">${e.id}</div></div>
+      <div class="detail-cell"><div class="detail-label">Status</div><div class="detail-val">${badge(e.status)}</div></div>
+      <div class="detail-cell"><div class="detail-label">Client</div><div class="detail-val">${clientName(e.customer)}</div></div>
+      <div class="detail-cell"><div class="detail-label">Shipment Type</div><div class="detail-val">${e.shiptype}</div></div>
+      <div class="detail-cell"><div class="detail-label">Mode</div><div class="detail-val">${badge(e.mode)}</div></div>
+      <div class="detail-cell"><div class="detail-label">Incoterms</div><div class="detail-val">${e.incoterms}</div></div>
+      <div class="detail-cell"><div class="detail-label">POL</div><div class="detail-val">${e.pol||'—'}</div></div>
+      <div class="detail-cell"><div class="detail-label">POD</div><div class="detail-val">${e.pod||'—'}</div></div>
+      <div class="detail-cell"><div class="detail-label">Priority</div><div class="detail-val">${badge(e.priority)}</div></div>
+      <div class="detail-cell"><div class="detail-label">Cargo Type</div><div class="detail-val">${e.cargoType}</div></div>
+      <div class="detail-cell"><div class="detail-label">Declared Value</div><div class="detail-val" style="font-family:var(--mono)">${fmtAmt(e.value)}</div></div>
+      <div class="detail-cell"><div class="detail-label">Sales Owner</div><div class="detail-val">${e.owner}</div></div>
+      <div class="detail-cell"><div class="detail-label">Cargo Ready</div><div class="detail-val">${fmtDate(e.readyDate)}</div></div>
+      <div class="detail-cell"><div class="detail-label">Valid Till</div><div class="detail-val">${fmtDate(e.validTill)}</div></div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div class="detail-label" style="margin-bottom:6px;">CARGO</div>
+      ${cargoHtml}
+    </div>
+    <div style="margin-bottom:10px;">
+      <div class="detail-label" style="margin-bottom:5px;">SERVICES</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;">${(e.services||[]).map(s=>`<span class="badge badge-quoted">${s}</span>`).join('') || '—'}</div>
+    </div>
+    ${e.notes?`<div><div class="detail-label" style="margin-bottom:5px;">NOTES</div><div style="font-size:12px;color:var(--t2);padding:8px;background:var(--bg3);border:1px solid var(--line)">${e.notes}</div></div>`:''}
+  `;
+  document.getElementById('view-enq-del').onclick = () => deleteEnquiry(id);
+  document.getElementById('view-enq-edit').onclick = () => editEnquiry(id);
+  document.getElementById('view-enq-create-quot').onclick = () => { closeModal('modal-view-enq'); openQuotationModal(e); };
+
+  // Status changer
+  const statuses = ['New','In Progress','Quoted','Won','Lost'];
+  const statusHtml = `<div style="display:flex;gap:4px;margin-bottom:14px;align-items:center;">
+    <span style="font-size:10px;color:var(--t3);font-family:var(--mono);margin-right:6px;">STATUS:</span>
+    ${statuses.map(s=>`<div class="radio-opt${e.status===s?' on':''}" style="font-size:10px;padding:4px 10px;" onclick="changeEnquiryStatus('${id}','${s}',this)">${s}</div>`).join('')}
+  </div>`;
+  document.getElementById('view-enq-body').insertAdjacentHTML('afterbegin', statusHtml);
+
+  document.getElementById('modal-view-enq').style.display = 'flex';
+}
+
+function changeEnquiryStatus(id, status, el) {
+  const e = enquiries.find(x=>x.id===id);
+  if(e) { e.status = status; save(); }
+  el.closest('.modal-body').querySelectorAll('.radio-opt').forEach(r=>r.classList.toggle('on', r.textContent.trim()===status));
+  toast('Status updated to '+status);
+  if(currentPage==='enquiries') renderEnquiriesTable();
+}
+
+// ═══════════════════ QUOTATION MODAL ═══════════════════
+function openQuotationModal(fromEnq) {
+  populateClientDropdowns();
+  document.getElementById('modal-quot-title').textContent = 'NEW QUOTATION';
+  document.getElementById('quot-id-field').value = '';
+  const ref = uid('QT');
+  document.getElementById('quot-ref').value = ref;
+  document.getElementById('quot-client').value = fromEnq?.customer || '';
+  document.getElementById('quot-enq-link').value = fromEnq?.id || '';
+  document.getElementById('quot-status').value = 'Draft';
+  document.getElementById('quot-origin').value = fromEnq?.pol || '';
+  document.getElementById('quot-dest').value = fromEnq?.pod || '';
+  document.getElementById('quot-mode').value = fromEnq?.mode || 'Sea Freight';
+  document.getElementById('quot-valid').value = '';
+  document.getElementById('quot-terms').value = 'Quote valid for 30 days. Subject to space availability.';
+  document.getElementById('quot-notes').value = '';
+  document.getElementById('charges-rows').innerHTML = '';
+  addChargeRow({ desc:'Ocean/Air Freight', unit:'Container', qty:1, rate:0 });
+  addChargeRow({ desc:'Origin THC', unit:'BL', qty:1, rate:0 });
+  addChargeRow({ desc:'Documentation Fee', unit:'BL', qty:1, rate:0 });
+  recalcTotal();
+  document.getElementById('modal-quotation').style.display = 'flex';
+}
+
+function editQuotation(id) {
+  const q = quotations.find(x=>x.id===id);
+  if(!q) return;
+  populateClientDropdowns();
+  closeModal('modal-view-quot');
+  document.getElementById('modal-quot-title').textContent = 'EDIT QUOTATION';
+  document.getElementById('quot-id-field').value = q.id;
+  document.getElementById('quot-ref').value = q.ref;
+  document.getElementById('quot-client').value = q.client;
+  document.getElementById('quot-enq-link').value = q.enquiryLink||'';
+  document.getElementById('quot-status').value = q.status;
+  document.getElementById('quot-origin').value = q.origin||'';
+  document.getElementById('quot-dest').value = q.dest||'';
+  document.getElementById('quot-mode').value = q.mode||'Sea Freight';
+  document.getElementById('quot-valid').value = q.validTill||'';
+  document.getElementById('quot-terms').value = q.terms||'';
+  document.getElementById('quot-notes').value = q.notes||'';
+  document.getElementById('charges-rows').innerHTML = '';
+  (q.charges||[]).forEach(c=>addChargeRow(c));
+  recalcTotal();
+  document.getElementById('modal-quotation').style.display = 'flex';
+}
+
+function addChargeRow(data) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" value="${data?.desc||''}" placeholder="Charge description" style="min-width:150px;" /></td>
+    <td><input type="text" value="${data?.unit||''}" placeholder="Unit" style="width:80px;" /></td>
+    <td><input type="number" value="${data?.qty||1}" min="0" style="width:60px;" oninput="recalcTotal()" /></td>
+    <td><input type="number" value="${data?.rate||''}" placeholder="0.00" min="0" step="0.01" style="width:90px;" oninput="recalcTotal()" /></td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--t1);padding:0 8px;min-width:80px;" class="charge-amt">${fmtAmt((data?.qty||1)*(data?.rate||0))}</td>
+    <td><button class="btn btn-sm btn-icon btn-danger" onclick="this.closest('tr').remove();recalcTotal()"><svg viewBox="0 0 12 12" width="10" height="10"><path d="M2 3h8M5 3V2h2v1M4 3l.4 7h3.2L8 3"/></svg></button></td>
+  `;
+  document.getElementById('charges-rows').appendChild(tr);
+}
+
+function recalcTotal() {
+  let total = 0;
+  document.querySelectorAll('#charges-rows tr').forEach(tr => {
+    const inputs = tr.querySelectorAll('input[type="number"]');
+    const qty = parseFloat(inputs[0]?.value||0);
+    const rate = parseFloat(inputs[1]?.value||0);
+    const amt = qty * rate;
+    total += amt;
+    const cell = tr.querySelector('.charge-amt');
+    if(cell) cell.textContent = fmtAmt(amt);
+  });
+  document.getElementById('quot-total').textContent = fmtAmt(total);
+}
+
+function saveQuotation() {
+  const client = document.getElementById('quot-client').value;
+  if(!client) { toast('Please select a client','error'); return; }
+  const charges = Array.from(document.querySelectorAll('#charges-rows tr')).map(tr => {
+    const inputs = tr.querySelectorAll('input');
+    const qty = parseFloat(inputs[2].value||0);
+    const rate = parseFloat(inputs[3].value||0);
+    return { desc:inputs[0].value, unit:inputs[1].value, qty, rate, amount:qty*rate };
+  });
+  const total = charges.reduce((s,c)=>s+c.amount,0);
+  const existingId = document.getElementById('quot-id-field').value;
+
+  const obj = {
+    id: existingId || document.getElementById('quot-ref').value,
+    client,
+    enquiryLink: document.getElementById('quot-enq-link').value,
+    ref: document.getElementById('quot-ref').value,
+    status: document.getElementById('quot-status').value,
+    origin: document.getElementById('quot-origin').value,
+    dest: document.getElementById('quot-dest').value,
+    mode: document.getElementById('quot-mode').value,
+    validTill: document.getElementById('quot-valid').value,
+    charges, total,
+    terms: document.getElementById('quot-terms').value,
+    notes: document.getElementById('quot-notes').value,
+    createdAt: existingId ? (quotations.find(x=>x.id===existingId)||{}).createdAt||today() : today(),
+  };
+
+  if(existingId) { const idx=quotations.findIndex(x=>x.id===existingId); quotations[idx]=obj; }
+  else { quotations.unshift(obj); }
+
+  // Update linked enquiry status
+  if(obj.enquiryLink) {
+    const enq = enquiries.find(x=>x.id===obj.enquiryLink);
+    if(enq && enq.status==='New') { enq.status='Quoted'; }
+  }
+
+  save();
+  closeModal('modal-quotation');
+  toast(existingId ? 'Quotation updated' : 'Quotation created');
+  if(currentPage==='quotations') renderQuotationsTable();
+  if(currentPage==='dashboard') renderDashboard();
+}
+
+function deleteQuotation(id) {
+  if(!confirm('Delete this quotation?')) return;
+  quotations = quotations.filter(x=>x.id!==id);
+  save(); closeModal('modal-view-quot');
+  toast('Quotation deleted'); renderQuotationsTable();
+}
+
+function viewQuotation(id) {
+  const q = quotations.find(x=>x.id===id);
+  if(!q) return;
+  document.getElementById('view-quot-title').textContent = q.ref;
+  document.getElementById('view-quot-body').innerHTML = `
+    <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;">
+      <span style="font-size:10px;color:var(--t3);font-family:var(--mono);margin-right:4px;">STATUS:</span>
+      ${['Draft','Sent','Accepted','Lost'].map(s=>`<div class="radio-opt${q.status===s?' on':''}" style="font-size:10px;padding:4px 10px;" onclick="changeQuotationStatus('${id}','${s}',this)">${s}</div>`).join('')}
+    </div>
+    <div class="detail-grid">
+      <div class="detail-cell"><div class="detail-label">Quote Ref</div><div class="detail-val" style="font-family:var(--mono)">${q.ref}</div></div>
+      <div class="detail-cell"><div class="detail-label">Client</div><div class="detail-val">${clientName(q.client)}</div></div>
+      <div class="detail-cell"><div class="detail-label">Origin</div><div class="detail-val">${q.origin||'—'}</div></div>
+      <div class="detail-cell"><div class="detail-label">Destination</div><div class="detail-val">${q.dest||'—'}</div></div>
+      <div class="detail-cell"><div class="detail-label">Mode</div><div class="detail-val">${badge(q.mode)}</div></div>
+      <div class="detail-cell"><div class="detail-label">Valid Till</div><div class="detail-val">${fmtDate(q.validTill)}</div></div>
+      ${q.enquiryLink?`<div class="detail-cell full"><div class="detail-label">Linked Enquiry</div><div class="detail-val" style="font-family:var(--mono);color:var(--accent);cursor:pointer;" onclick="closeModal('modal-view-quot');viewEnquiry('${q.enquiryLink}')">${q.enquiryLink}</div></div>`:''}
+    </div>
+    <div style="margin-bottom:12px;">
+      <div class="detail-label" style="margin-bottom:6px;">CHARGES BREAKDOWN</div>
+      <div class="cargo-display"><table>
+        <thead><tr><th>Description</th><th>Unit</th><th>Qty</th><th>Rate (USD)</th><th>Amount (USD)</th></tr></thead>
+        <tbody>${(q.charges||[]).map(c=>`<tr><td>${c.desc}</td><td>${c.unit}</td><td style="font-family:var(--mono)">${c.qty}</td><td style="font-family:var(--mono)">${fmtAmt(c.rate)}</td><td style="font-family:var(--mono);color:var(--t1);font-weight:500">${fmtAmt(c.amount)}</td></tr>`).join('')}</tbody>
+      </table></div>
+      <div style="display:flex;justify-content:flex-end;gap:14px;padding:10px;background:var(--bg3);border:1px solid var(--line);border-top:none;">
+        <span style="font-size:11px;color:var(--t3);font-family:var(--mono);">TOTAL</span>
+        <span style="font-size:14px;font-weight:700;font-family:var(--mono);color:var(--t1);">${fmtAmt(q.total)}</span>
+      </div>
+    </div>
+    ${q.terms?`<div><div class="detail-label" style="margin-bottom:5px;">TERMS</div><div style="font-size:12px;color:var(--t2);padding:8px;background:var(--bg3);border:1px solid var(--line)">${q.terms}</div></div>`:''}
+  `;
+  document.getElementById('view-quot-del').onclick = () => deleteQuotation(id);
+  document.getElementById('view-quot-edit').onclick = () => editQuotation(id);
+  document.getElementById('modal-view-quot').style.display = 'flex';
+}
+
+function changeQuotationStatus(id, status, el) {
+  const q = quotations.find(x=>x.id===id);
+  if(q) { q.status = status; save(); }
+  el.closest('.modal-body').querySelectorAll('.radio-opt').forEach(r=>r.classList.toggle('on', r.textContent.trim()===status));
+  toast('Status updated to '+status);
+  if(currentPage==='quotations') renderQuotationsTable();
+}
+
+// ═══════════════════ CLIENT MODAL ═══════════════════
+function openClientModal() {
+  document.getElementById('modal-cli-title').textContent = 'NEW CLIENT';
+  document.getElementById('cli-id-field').value = '';
+  ['company','contact','designation','email','phone','address','tax'].forEach(f=>document.getElementById('cli-'+f).value='');
+  document.getElementById('cli-country').value = 'India';
+  document.getElementById('cli-industry').value = 'Manufacturing';
+  document.getElementById('cli-credit').value = '';
+  document.getElementById('modal-client').style.display = 'flex';
+}
+
+function editClient(id) {
+  const c = clients.find(x=>x.id===id);
+  if(!c) return;
+  closeModal('modal-view-cli');
+  document.getElementById('modal-cli-title').textContent = 'EDIT CLIENT';
+  document.getElementById('cli-id-field').value = c.id;
+  document.getElementById('cli-company').value = c.company;
+  document.getElementById('cli-contact').value = c.contact;
+  document.getElementById('cli-designation').value = c.designation||'';
+  document.getElementById('cli-email').value = c.email;
+  document.getElementById('cli-phone').value = c.phone||'';
+  document.getElementById('cli-country').value = c.country;
+  document.getElementById('cli-industry').value = c.industry;
+  document.getElementById('cli-address').value = c.address||'';
+  document.getElementById('cli-tax').value = c.tax||'';
+  document.getElementById('cli-credit').value = c.credit||'';
+  document.getElementById('modal-client').style.display = 'flex';
+}
+
+function saveClient() {
+  const company = document.getElementById('cli-company').value.trim();
+  const contact = document.getElementById('cli-contact').value.trim();
+  const email = document.getElementById('cli-email').value.trim();
+  if(!company||!contact||!email) { toast('Company, contact and email are required','error'); return; }
+  const existingId = document.getElementById('cli-id-field').value;
+  const obj = {
+    id: existingId || 'C' + String(clients.length+1).padStart('3','0'),
+    company, contact,
+    designation: document.getElementById('cli-designation').value,
+    email,
+    phone: document.getElementById('cli-phone').value,
+    country: document.getElementById('cli-country').value,
+    industry: document.getElementById('cli-industry').value,
+    address: document.getElementById('cli-address').value,
+    tax: document.getElementById('cli-tax').value,
+    credit: document.getElementById('cli-credit').value||0,
+    createdAt: existingId ? (clients.find(x=>x.id===existingId)||{}).createdAt||today() : today(),
+  };
+  if(existingId) { const idx=clients.findIndex(x=>x.id===existingId); clients[idx]=obj; }
+  else { clients.push(obj); }
+  save();
+  closeModal('modal-client');
+  toast(existingId ? 'Client updated' : 'Client added');
+  if(currentPage==='clients') renderClientsTable();
+}
+
+function deleteClient(id) {
+  if(!confirm('Delete this client?')) return;
+  clients = clients.filter(x=>x.id!==id);
+  save(); closeModal('modal-view-cli');
+  toast('Client deleted'); renderClientsTable();
+}
+
+function viewClient(id) {
+  const c = clients.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('view-cli-title').textContent = c.company;
+  const clientEnqs = enquiries.filter(e=>e.customer===id);
+  const clientQuots = quotations.filter(q=>q.client===id);
+  document.getElementById('view-cli-body').innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-cell"><div class="detail-label">Client ID</div><div class="detail-val" style="font-family:var(--mono)">${c.id}</div></div>
+      <div class="detail-cell"><div class="detail-label">Company</div><div class="detail-val">${c.company}</div></div>
+      <div class="detail-cell"><div class="detail-label">Contact</div><div class="detail-val">${c.contact}</div></div>
+      <div class="detail-cell"><div class="detail-label">Designation</div><div class="detail-val">${c.designation||'—'}</div></div>
+      <div class="detail-cell"><div class="detail-label">Email</div><div class="detail-val" style="color:var(--accent)">${c.email}</div></div>
+      <div class="detail-cell"><div class="detail-label">Phone</div><div class="detail-val">${c.phone||'—'}</div></div>
+      <div class="detail-cell"><div class="detail-label">Country</div><div class="detail-val">${c.country}</div></div>
+      <div class="detail-cell"><div class="detail-label">Industry</div><div class="detail-val">${c.industry}</div></div>
+      <div class="detail-cell"><div class="detail-label">Credit Limit</div><div class="detail-val" style="font-family:var(--mono)">${fmtAmt(c.credit)}</div></div>
+      <div class="detail-cell"><div class="detail-label">Tax ID</div><div class="detail-val">${c.tax||'—'}</div></div>
+    </div>
+    ${c.address?`<div style="margin-bottom:12px;"><div class="detail-label" style="margin-bottom:5px;">ADDRESS</div><div style="font-size:12px;color:var(--t2);padding:8px;background:var(--bg3);border:1px solid var(--line)">${c.address}</div></div>`:''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div>
+        <div class="detail-label" style="margin-bottom:6px;">ENQUIRIES (${clientEnqs.length})</div>
+        ${clientEnqs.length?clientEnqs.slice(0,3).map(e=>`<div style="padding:6px 10px;background:var(--bg3);border:1px solid var(--line);margin-bottom:4px;font-size:11px;display:flex;justify-content:space-between;cursor:pointer" onclick="closeModal('modal-view-cli');viewEnquiry('${e.id}')"><span style="font-family:var(--mono);color:var(--accent)">${e.id}</span>${badge(e.status)}</div>`).join(''):'<div style="font-size:11px;color:var(--t3);padding:6px 0">No enquiries</div>'}
+      </div>
+      <div>
+        <div class="detail-label" style="margin-bottom:6px;">QUOTATIONS (${clientQuots.length})</div>
+        ${clientQuots.length?clientQuots.slice(0,3).map(q=>`<div style="padding:6px 10px;background:var(--bg3);border:1px solid var(--line);margin-bottom:4px;font-size:11px;display:flex;justify-content:space-between;cursor:pointer" onclick="closeModal('modal-view-cli');viewQuotation('${q.id}')"><span style="font-family:var(--mono);color:var(--accent)">${q.ref}</span>${badge(q.status)}</div>`).join(''):'<div style="font-size:11px;color:var(--t3);padding:6px 0">No quotations</div>'}
+      </div>
+    </div>
+  `;
+  document.getElementById('view-cli-del').onclick = () => deleteClient(id);
+  document.getElementById('view-cli-edit').onclick = () => editClient(id);
+  document.getElementById('modal-view-cli').style.display = 'flex';
+}
+
+// ═══════════════════ FORM HELPERS ═══════════════════
+function closeModal(id) { document.getElementById(id).style.display='none'; }
+
+function setRadio(group, el, val) {
+  el.closest('.radio-row').querySelectorAll('.radio-opt').forEach(r=>r.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('enq-'+group).value = val;
+}
+
+function setMode(el, val) {
+  document.querySelectorAll('.mode-btn').forEach(m=>m.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('enq-mode').value = val;
+  updateRouteVis();
+}
+
+function updateRouteVis() {
+  const pol = document.getElementById('enq-pol')?.value || '';
+  const pod = document.getElementById('enq-pod')?.value || '';
+  const mode = document.getElementById('enq-mode')?.value || 'Sea Freight';
+  const polCode = pol.split('—')[0].trim().split(' ').pop() || '—';
+  const podCode = pod.split('—')[0].trim().split(' ').pop() || '—';
+  document.getElementById('rv-pol').textContent = polCode || '—';
+  document.getElementById('rv-pod').textContent = podCode || '—';
+  const modeMap = {'Sea Freight':'SEA FCL','Air Freight':'AIR CARGO','Road Transport':'ROAD'};
+  document.getElementById('rv-mode').textContent = modeMap[mode]||mode;
+}
+
+function addCargoRow(data) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" value="${data?.desc||''}" placeholder="Description" style="min-width:120px;" /></td>
+    <td><select style="width:90px;">
+      <option${data?.pkg==='Cartons'?' selected':''}>Cartons</option>
+      <option${data?.pkg==='Pallets'?' selected':''}>Pallets</option>
+      <option${data?.pkg==='Drums'?' selected':''}>Drums</option>
+      <option${data?.pkg==='Bags'?' selected':''}>Bags</option>
+      <option${data?.pkg==='Crates'?' selected':''}>Crates</option>
+      <option${data?.pkg==='Sacks'?' selected':''}>Sacks</option>
+    </select></td>
+    <td><input type="number" value="${data?.qty||''}" placeholder="0" min="0" style="width:55px;" /></td>
+    <td><input type="number" value="${data?.wt||''}" placeholder="0" min="0" style="width:70px;" /></td>
+    <td><input type="number" value="${data?.cbm||''}" placeholder="0.0" min="0" step="0.1" style="width:65px;" /></td>
+    <td><input type="text" value="${data?.dims||''}" placeholder="LxWxH" style="width:90px;" /></td>
+    <td><button class="btn btn-sm btn-icon btn-danger" onclick="this.closest('tr').remove()"><svg viewBox="0 0 12 12" width="10" height="10"><path d="M2 3h8M5 3V2h2v1M4 3l.4 7h3.2L8 3"/></svg></button></td>
+  `;
+  document.getElementById('cargo-rows').appendChild(tr);
+}
+
+function toggleSvc(el) {
+  el.classList.toggle('on');
+  el.querySelector('input').checked = el.classList.contains('on');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click', e=>{ if(e.target===o) o.style.display='none'; });
+});
+
+// ═══════════════════ INIT ═══════════════════
+seedData();
+updateCounts();
+renderDashboard();
+</script>
+</body>
+</html>

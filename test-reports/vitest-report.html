@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Vitest report — Logistics CRM</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 24px; color: #0f172a; background: #f8fafc; }
+    h1 { font-size: 1.25rem; }
+    .meta { color: #64748b; font-size: 0.875rem; margin-bottom: 16px; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 0.8rem; }
+    .badge.ok { background: #d1fae5; color: #065f46; }
+    .badge.bad { background: #fee2e2; color: #991b1b; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+    th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; }
+    th { background: #f1f5f9; font-weight: 600; }
+    tr.pass td:first-child { color: #059669; font-weight: 600; }
+    tr.fail td:first-child { color: #dc2626; font-weight: 600; }
+    tr.pend td:first-child { color: #d97706; font-weight: 600; }
+    td.file { background: #eff6ff; font-weight: 600; color: #1e40af; }
+    td.num { white-space: nowrap; color: #64748b; }
+    pre { white-space: pre-wrap; margin: 0; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <h1>Frontend unit tests (Vitest)</h1>
+  <p class="meta">Generated 2026-04-08T16:12:28.305Z</p>
+  <p>
+    <span class="badge ok">SUCCESS</span>
+    &nbsp; Passed: <strong>16</strong> · Failed: <strong>0</strong> · Skipped/Pending: <strong>0</strong> · Total: <strong>16</strong>
+  </p>
+  <table>
+    <thead><tr><th>Status</th><th>Suite</th><th>Test</th><th>Duration</th></tr></thead>
+    <tbody><tr><td colspan="4" class="file">D:/logistics-crm/src/services/emailPlaceholders.test.js</td></tr>
+<tr class="pass"><td>passed</td><td>interpolateTemplate</td><td>replaces known keys</td><td class="num">4ms</td></tr>
+<tr class="pass"><td>passed</td><td>interpolateTemplate</td><td>trims spaces inside braces</td><td class="num">0ms</td></tr>
+<tr class="pass"><td>passed</td><td>interpolateTemplate</td><td>uses empty string for unknown keys</td><td class="num">0ms</td></tr>
+<tr class="pass"><td>passed</td><td>interpolateTemplate</td><td>returns empty for falsy template</td><td class="num">0ms</td></tr>
+<tr class="pass"><td>passed</td><td>buildClientEmailContext</td><td>prefers contact name and company fields</td><td class="num">1ms</td></tr>
+<tr class="pass"><td>passed</td><td>buildQuotationEmailContext</td><td>includes respond URLs when token and base are set</td><td class="num">137ms</td></tr>
+<tr class="pass"><td>passed</td><td>buildQuotationEmailContext</td><td>omits action buttons for internal copy</td><td class="num">1ms</td></tr>
+<tr class="pass"><td>passed</td><td>buildFinalEmailHtml</td><td>wraps external categories with branding shell</td><td class="num">1ms</td></tr>
+<tr class="pass"><td>passed</td><td>buildFinalEmailHtml</td><td>uses minimal wrapper for internal_email</td><td class="num">0ms</td></tr>
+<tr class="pass"><td>passed</td><td>buildReportEmailContext</td><td>formats KPI table</td><td class="num">3ms</td></tr>
+<tr><td colspan="4" class="file">D:/logistics-crm/src/utils/quoteCalculations.test.js</td></tr>
+<tr class="pass"><td>passed</td><td>calcLineTax</td><td>computes tax from qty, price, and percent</td><td class="num">3ms</td></tr>
+<tr class="pass"><td>passed</td><td>calcLineTax</td><td>treats missing numbers as zero</td><td class="num">1ms</td></tr>
+<tr class="pass"><td>passed</td><td>calcQuoteTotals</td><td>sums subtotal, tax, discount, and final amount</td><td class="num">1ms</td></tr>
+<tr class="pass"><td>passed</td><td>calcQuoteTotals</td><td>never returns negative final amount</td><td class="num">0ms</td></tr>
+<tr class="pass"><td>passed</td><td>calcQuoteTotals</td><td>handles non-array items</td><td class="num">2ms</td></tr>
+<tr class="pass"><td>passed</td><td>calcInvoiceTotals</td><td>returns subtotal plus tax</td><td class="num">1ms</td></tr></tbody>
+  </table>
+  <p class="meta"><a href="index.html">← Report index</a> · Raw JSON: <a href="vitest-results.json">vitest-results.json</a></p>
+</body>
+</html>

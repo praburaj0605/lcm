@@ -1,0 +1,82 @@
+# Logistics CRM — Postgres + Redis + FastAPI + Vite (dev-oriented).
+# Volumes: database, Redis AOF, node_modules (anonymous), bind mounts for source.
+#
+# Usage:
+#   docker compose up --build
+#   Frontend: http://localhost:5173  (proxies /api → api:8000)
+#   API docs: http://localhost:8000/docs
+#
+# Env: copy backend/.env.example → backend/.env and adjust; optional root .env for JWT_SECRET.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: logistics
+      POSTGRES_PASSWORD: logistics
+      POSTGRES_DB: logistics
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U logistics -d logistics"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg://logistics:logistics@postgres:5432/logistics
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-in-production}
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:80
+      AUTH_ALLOW_EMAIL_ONLY: "true"
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "alembic upgrade head &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    image: node:22-alpine
+    working_dir: /app
+    environment:
+      VITE_PROXY_API: http://api:8000
+    volumes:
+      - .:/app
+      - web_node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
+    depends_on:
+      - api
+
+volumes:
+  pg_data:
+  redis_data:
+  web_node_modules:

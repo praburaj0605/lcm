@@ -1,0 +1,274 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Tailwind theme tokens. Runtime chrome (FreightDesk vs Vuestic) overrides --font-sans, canvas, sidebar via html[data-chrome].
+ * Vuestic reference: https://admin-demo.vuestic.dev/dashboard
+ */
+@theme {
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --font-sans:
+    'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans',
+    'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  --font-chrome-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --color-va-blue: #2563eb;
+  --color-va-blue-hover: #1d4ed8;
+  --color-va-blue-soft: #eff6ff;
+  --color-va-primary: #2563eb;
+  --color-va-primary-hover: #1d4ed8;
+  --color-va-primary-soft: #eff6ff;
+  --color-va-sidebar: #ffffff;
+  --color-va-sidebar-border: #e2e8f0;
+  --color-va-sidebar-hover: #f1f5f9;
+  --color-va-sidebar-active: rgba(37, 99, 235, 0.1);
+  --color-va-canvas: #eef1f6;
+  --color-va-canvas-dark: #13161b;
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+    font-family: var(--font-sans);
+  }
+
+  body {
+    @apply m-0 min-h-svh text-slate-800;
+    background-color: var(--color-va-canvas);
+  }
+
+  .dark body {
+    @apply text-slate-100;
+    background-color: var(--color-va-canvas-dark);
+  }
+
+  #root {
+    @apply min-h-svh w-full max-w-none text-left;
+  }
+}
+
+/* ---- Chrome: Vuestic (system fonts, original surfaces) ---- */
+html[data-chrome='vuestic'] {
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-chrome-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
+  --color-va-sidebar-active: #eff6ff;
+  --color-va-canvas: #f5f7fb;
+  --color-va-canvas-dark: #1a1d2e;
+}
+
+/* .dark lives on <html>, so use html.dark — not .dark html */
+html.dark[data-chrome='vuestic'] {
+  --color-va-sidebar: #ffffff;
+  --color-va-sidebar-border: #e2e8f0;
+  --color-va-sidebar-hover: #f1f5f9;
+}
+
+/* ---- Chrome: FreightDesk — IBM Plex app-wide; sidebar follows light/dark ---- */
+html[data-chrome='freightDesk'] {
+  --font-sans:
+    'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans',
+    'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  --font-chrome-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+html[data-chrome='freightDesk'] {
+  font-family: var(--font-sans);
+}
+
+html[data-chrome='freightDesk'] body {
+  font-family: var(--font-sans);
+}
+
+/* Inherit Plex everywhere (incl. portals mounted on body, e.g. Sonner) */
+html[data-chrome='freightDesk'] body *,
+html[data-chrome='freightDesk'] body *::before,
+html[data-chrome='freightDesk'] body *::after {
+  font-family: inherit;
+}
+
+html[data-chrome='freightDesk'] #root {
+  font-family: var(--font-sans);
+}
+
+html[data-chrome='freightDesk'] aside,
+html[data-chrome='freightDesk'] header.sticky {
+  font-family: var(--font-sans);
+}
+
+html[data-chrome='freightDesk'] .font-mono,
+html[data-chrome='freightDesk'] code,
+html[data-chrome='freightDesk'] kbd,
+html[data-chrome='freightDesk'] pre,
+html[data-chrome='freightDesk'] .app-form-label,
+html[data-chrome='freightDesk'] .app-chrome-nav-heading,
+html[data-chrome='freightDesk'] .app-chrome-brand-meta {
+  font-family: var(--font-chrome-mono), ui-monospace, monospace;
+}
+
+/* FreightDesk light: light sidebar panel */
+html[data-chrome='freightDesk']:not(.dark) {
+  --color-va-sidebar: #f1f5f9;
+  --color-va-sidebar-border: #e2e8f0;
+  --color-va-sidebar-hover: #e2e8f0;
+  --color-va-sidebar-active: rgba(37, 99, 235, 0.12);
+}
+
+/* FreightDesk dark: dark sidebar panel */
+html.dark[data-chrome='freightDesk'] {
+  --color-va-sidebar: #14161c;
+  --color-va-sidebar-border: #2a2f3d;
+  --color-va-sidebar-hover: #1c202b;
+  --color-va-sidebar-active: rgba(59, 130, 246, 0.14);
+}
+
+/* Form labels: monospace micro-caps in FreightDesk only */
+html[data-chrome='freightDesk'] .app-form-label {
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+
+html[data-chrome='vuestic'] .app-form-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+/* Main content canvas */
+.va-canvas {
+  background-color: var(--color-va-canvas);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 100% -20%, rgba(37, 99, 235, 0.06), transparent 50%),
+    radial-gradient(ellipse 80% 60% at 0% 100%, rgba(37, 99, 235, 0.04), transparent 45%);
+}
+
+.dark .va-canvas {
+  background-color: var(--color-va-canvas-dark);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 100% -20%, rgba(37, 99, 235, 0.1), transparent 50%),
+    radial-gradient(ellipse 80% 60% at 0% 100%, rgba(37, 99, 235, 0.06), transparent 45%);
+}
+
+html[data-chrome='freightDesk'] .va-canvas {
+  background-image:
+    radial-gradient(ellipse 100% 70% at 100% 0%, rgba(37, 99, 235, 0.045), transparent 55%),
+    radial-gradient(ellipse 90% 50% at 0% 100%, rgba(15, 23, 42, 0.03), transparent 50%);
+}
+
+html.dark[data-chrome='freightDesk'] .va-canvas {
+  background-image:
+    radial-gradient(ellipse 100% 70% at 100% 0%, rgba(96, 165, 250, 0.07), transparent 55%),
+    radial-gradient(ellipse 90% 50% at 0% 100%, rgba(15, 23, 42, 0.25), transparent 50%);
+}
+
+/* FreightDesk: tables & selects use same Plex stack and body text size */
+html[data-chrome='freightDesk'] .crm-data-table,
+html[data-chrome='freightDesk'] .crm-data-table table {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+html[data-chrome='freightDesk'] select,
+html[data-chrome='freightDesk'] textarea {
+  font-family: inherit;
+}
+
+html[data-chrome='freightDesk'] .app-detail-section-title {
+  font-family: var(--font-chrome-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+}
+
+html[data-chrome='freightDesk'] [data-sonner-toaster],
+html[data-chrome='freightDesk'] [data-sonner-toast],
+html[data-chrome='freightDesk'] [data-sonner-toast] * {
+  font-family: var(--font-sans) !important;
+}
+
+/* List detail modals: print only `.crm-print-root` */
+@media print {
+  html.crm-printing-detail body * {
+    visibility: hidden !important;
+  }
+
+  html.crm-printing-detail .crm-print-root,
+  html.crm-printing-detail .crm-print-root * {
+    visibility: visible !important;
+  }
+
+  html.crm-printing-detail .crm-print-root {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #fff !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  html.crm-printing-detail .crm-print-root .dark\:text-white,
+  html.crm-printing-detail .crm-print-root .dark\:text-slate-100,
+  html.crm-printing-detail .crm-print-root .dark\:text-slate-200,
+  html.crm-printing-detail .crm-print-root .dark\:text-slate-300,
+  html.crm-printing-detail .crm-print-root .dark\:text-slate-400 {
+    color: #0f172a !important;
+  }
+
+  html.crm-printing-detail .crm-print-root .dark\:bg-slate-900\/40,
+  html.crm-printing-detail .crm-print-root .dark\:bg-slate-800\/50,
+  html.crm-printing-detail .crm-print-root .dark\:bg-slate-800\/90,
+  html.crm-printing-detail .crm-print-root .dark\:from-slate-800\/90 {
+    background-color: #f8fafc !important;
+    background-image: none !important;
+  }
+
+  html.crm-printing-detail .crm-print-root .dark\:border-slate-600,
+  html.crm-printing-detail .crm-print-root .dark\:border-slate-700 {
+    border-color: #e2e8f0 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Management reports: lean print layout */
+@media print {
+  body.reports-print-mode aside,
+  body.reports-print-mode .no-print {
+    display: none !important;
+  }
+
+  body.reports-print-mode header.sticky {
+    display: none !important;
+  }
+
+  body.reports-print-mode main {
+    padding: 0.75rem !important;
+  }
+
+  body.reports-print-mode .va-canvas {
+    background: #fff !important;
+    background-image: none !important;
+  }
+
+  body.reports-print-mode .dark,
+  body.reports-print-mode .dark * {
+    color: #0f172a !important;
+    background-color: transparent !important;
+    border-color: #e2e8f0 !important;
+  }
+}
