@@ -194,15 +194,71 @@ html[data-chrome='freightDesk'] [data-sonner-toast] * {
   font-family: var(--font-sans) !important;
 }
 
+/*
+ * Screen shell uses viewport height + overflow; print must expand so content paginates.
+ * Modal "print record" uses visibility isolation — hidden nodes must leave flow or blank pages print.
+ */
+@media print {
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  #root {
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .app-shell {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .app-shell-main {
+    min-height: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .app-shell main {
+    flex: none !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+}
+
 /* List detail modals: print only `.crm-print-root` */
 @media print {
   html.crm-printing-detail body * {
     visibility: hidden !important;
+    position: fixed !important;
+    left: -10000px !important;
+    top: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
   }
 
   html.crm-printing-detail .crm-print-root,
   html.crm-printing-detail .crm-print-root * {
     visibility: visible !important;
+  }
+
+  html.crm-printing-detail .crm-print-root * {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
 
   html.crm-printing-detail .crm-print-root {
@@ -211,6 +267,9 @@ html[data-chrome='freightDesk'] [data-sonner-toast] * {
     top: 0 !important;
     width: 100% !important;
     max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
     padding: 0 !important;
     margin: 0 !important;
     background: #fff !important;
@@ -252,7 +311,7 @@ html[data-chrome='freightDesk'] [data-sonner-toast] * {
     display: none !important;
   }
 
-  body.reports-print-mode header.sticky {
+  body.reports-print-mode header.app-chrome-header {
     display: none !important;
   }
 

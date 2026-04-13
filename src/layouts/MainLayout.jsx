@@ -144,9 +144,9 @@ export function MainLayout() {
   }, [token, bootstrapFromApi])
 
   return (
-    <div className="flex min-h-svh">
+    <div className="app-shell flex h-svh min-h-0 overflow-hidden">
       <aside
-        className={`hidden shrink-0 flex-col border-r border-[var(--color-va-sidebar-border)] bg-[var(--color-va-sidebar)] text-slate-800 shadow-[1px_0_0_rgba(15,23,42,0.06)] dark:text-slate-100 md:flex ${
+        className={`hidden min-h-0 shrink-0 flex-col border-r border-[var(--color-va-sidebar-border)] bg-[var(--color-va-sidebar)] text-slate-800 shadow-[1px_0_0_rgba(15,23,42,0.06)] dark:text-slate-100 md:flex ${
           collapsed ? 'w-[76px]' : 'w-[260px]'
         }`}
       >
@@ -243,8 +243,8 @@ export function MainLayout() {
         ) : null}
       </AnimatePresence>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3.5 shadow-sm dark:border-slate-800 dark:bg-[#1e2130]">
+      <div className="app-shell-main flex min-h-0 min-w-0 flex-1 flex-col">
+        <header className="app-chrome-header z-30 flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3.5 shadow-sm dark:border-slate-800 dark:bg-[#1e2130]">
           <div className="flex items-center gap-3">
             <Button
               type="button"
@@ -276,7 +276,7 @@ export function MainLayout() {
             ) : null}
           </div>
         </header>
-        <main className="va-canvas flex-1 p-4 md:p-8">
+        <main className="va-canvas min-h-0 flex-1 overflow-y-auto p-4 md:p-8">
           <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>
             <AppBreadcrumbs />
             <Outlet />
