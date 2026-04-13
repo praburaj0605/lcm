@@ -196,7 +196,8 @@ html[data-chrome='freightDesk'] [data-sonner-toast] * {
 
 /*
  * Screen shell uses viewport height + overflow; print must expand so content paginates.
- * Modal "print record" uses visibility isolation — hidden nodes must leave flow or blank pages print.
+ * Dark mode + Framer Motion often yield “blank” prints (light ink on omitted backgrounds, opacity 0).
+ * Modal record print clones `.crm-print-surface` onto body and hides other siblings for that job only.
  */
 @media print {
   html,
@@ -231,76 +232,86 @@ html[data-chrome='freightDesk'] [data-sonner-toast] * {
     min-height: 0 !important;
     overflow: visible !important;
   }
-}
 
-/* List detail modals: print only `.crm-print-root` */
-@media print {
-  html.crm-printing-detail body * {
-    visibility: hidden !important;
-    position: fixed !important;
-    left: -10000px !important;
-    top: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    max-height: 0 !important;
-    overflow: hidden !important;
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  html.crm-printing-detail .crm-print-root,
-  html.crm-printing-detail .crm-print-root * {
-    visibility: visible !important;
+  .app-outlet-frame {
+    opacity: 1 !important;
+    transform: none !important;
   }
 
-  html.crm-printing-detail .crm-print-root * {
-    position: static !important;
-    left: auto !important;
-    top: auto !important;
-    width: auto !important;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
+  html.dark {
+    color-scheme: light !important;
   }
 
-  html.crm-printing-detail .crm-print-root {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    max-width: none !important;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    padding: 0 !important;
-    margin: 0 !important;
+  html.dark,
+  html.dark body {
     background: #fff !important;
-    color: #0f172a !important;
-    box-shadow: none !important;
-    border: none !important;
   }
 
-  html.crm-printing-detail .crm-print-root .dark\:text-white,
-  html.crm-printing-detail .crm-print-root .dark\:text-slate-100,
-  html.crm-printing-detail .crm-print-root .dark\:text-slate-200,
-  html.crm-printing-detail .crm-print-root .dark\:text-slate-300,
-  html.crm-printing-detail .crm-print-root .dark\:text-slate-400 {
+  html.dark .app-shell * {
+    color: #0f172a !important;
+    text-shadow: none !important;
+  }
+
+  html.dark .app-shell svg {
     color: #0f172a !important;
   }
 
-  html.crm-printing-detail .crm-print-root .dark\:bg-slate-900\/40,
-  html.crm-printing-detail .crm-print-root .dark\:bg-slate-800\/50,
-  html.crm-printing-detail .crm-print-root .dark\:bg-slate-800\/90,
-  html.crm-printing-detail .crm-print-root .dark\:from-slate-800\/90 {
-    background-color: #f8fafc !important;
-    background-image: none !important;
-  }
-
-  html.crm-printing-detail .crm-print-root .dark\:border-slate-600,
-  html.crm-printing-detail .crm-print-root .dark\:border-slate-700 {
-    border-color: #e2e8f0 !important;
+  html.dark .app-shell svg[fill='none'] {
+    color: inherit !important;
   }
 
   .no-print {
     display: none !important;
+  }
+}
+
+/* Clone lives in body briefly; keep it off-screen on screen, full layout when printing */
+.crm-print-surface {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+
+@media print {
+  html.crm-print-surface-active body > *:not(.crm-print-surface) {
+    display: none !important;
+  }
+
+  html.crm-print-surface-active .crm-print-surface {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    clip-path: none !important;
+    margin: 0 !important;
+    padding: 10mm 8mm !important;
+    background: #fff !important;
+    color: #0f172a !important;
+    pointer-events: auto !important;
+  }
+
+  html.crm-print-surface-active .crm-print-surface * {
+    color: #0f172a !important;
+    text-shadow: none !important;
+  }
+
+  html.crm-print-surface-active .crm-print-surface svg {
+    color: #0f172a !important;
   }
 }
 

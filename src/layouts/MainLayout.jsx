@@ -277,7 +277,12 @@ export function MainLayout() {
           </div>
         </header>
         <main className="va-canvas min-h-0 flex-1 overflow-y-auto p-4 md:p-8">
-          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.22 }}>
+          <motion.div
+            className="app-outlet-frame"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.22 }}
+          >
             <AppBreadcrumbs />
             <Outlet />
           </motion.div>

@@ -28,8 +28,10 @@ function entityEditPath(kind, id) {
 /**
  * Print, email (Brevo), and copy deep-link for list detail modals.
  * Toolbar stays outside `.crm-print-root` so it does not appear in print.
+ *
+ * `printRootRef` should point at the `.crm-print-root` node (clone is moved to `document.body` for reliable printing).
  */
-export function EntityShareToolbar({ kind, record, client, enquiry }) {
+export function EntityShareToolbar({ kind, record, client, enquiry, printRootRef }) {
   const [mailOpen, setMailOpen] = useState(false)
   const [mailKey, setMailKey] = useState(0)
   const authUser = useAppStore((s) => s.auth.user)
@@ -86,13 +88,43 @@ export function EntityShareToolbar({ kind, record, client, enquiry }) {
   }, [kind, record, client, enquiry, sender])
 
   function handlePrint() {
-    document.documentElement.classList.add('crm-printing-detail')
-    const done = () => {
-      document.documentElement.classList.remove('crm-printing-detail')
-      window.removeEventListener('afterprint', done)
+    const source = printRootRef?.current ?? document.querySelector('[data-crm-print-root]')
+    if (!source) {
+      toast.error('Nothing to print')
+      return
     }
-    window.addEventListener('afterprint', done)
-    requestAnimationFrame(() => window.print())
+
+    const surface = document.createElement('div')
+    surface.className = 'crm-print-surface'
+    surface.appendChild(source.cloneNode(true))
+
+    const mql = window.matchMedia('print')
+    let finished = false
+    const onAfterPrint = () => teardown()
+    const onMqlChange = () => {
+      if (!mql.matches) teardown()
+    }
+    function teardown() {
+      if (finished) return
+      finished = true
+      document.documentElement.classList.remove('crm-print-surface-active')
+      surface.remove()
+      window.removeEventListener('afterprint', onAfterPrint)
+      mql.removeEventListener('change', onMqlChange)
+    }
+
+    document.body.appendChild(surface)
+    document.documentElement.classList.add('crm-print-surface-active')
+    window.addEventListener('afterprint', onAfterPrint)
+    mql.addEventListener('change', onMqlChange)
+
+    requestAnimationFrame(() => {
+      try {
+        window.print()
+      } catch {
+        teardown()
+      }
+    })
   }
 
   async function copyUrl() {

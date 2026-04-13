@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createColumnHelper } from '@tanstack/react-table'
 import { format, parseISO } from 'date-fns'
@@ -32,6 +32,7 @@ export function QuotationsList() {
 
   const [viewRow, setViewRow] = useState(null)
   const [deleteId, setDeleteId] = useState(null)
+  const printDetailRef = useRef(null)
 
   const resolveClientLabel = useCallback(
     (id) =>
@@ -128,8 +129,9 @@ export function QuotationsList() {
               record={viewRow}
               client={clients.find((c) => c.id === viewRow.clientId)}
               enquiry={enquiries.find((e) => e.id === viewRow.enquiryId)}
+              printRootRef={printDetailRef}
             />
-            <div className="crm-print-root">
+            <div ref={printDetailRef} className="crm-print-root" data-crm-print-root>
               <h2 className="mb-3 hidden text-base font-bold text-slate-900 print:block dark:text-white">
                 Quotation {viewRow.quoteId || viewRow.id}
               </h2>

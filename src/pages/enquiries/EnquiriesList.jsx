@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createColumnHelper } from '@tanstack/react-table'
 import { format, parseISO } from 'date-fns'
@@ -54,6 +54,7 @@ export function EnquiriesList() {
   const [deleteId, setDeleteId] = useState(null)
   const [assignRow, setAssignRow] = useState(null)
   const [assignSelected, setAssignSelected] = useState([])
+  const printDetailRef = useRef(null)
 
   const openAssign = useCallback((row) => {
     setAssignSelected([...(row.assignedPricingUserIds || [])])
@@ -213,8 +214,9 @@ export function EnquiriesList() {
               kind="enquiry"
               record={viewRow}
               client={clients.find((c) => c.id === viewRow.clientId)}
+              printRootRef={printDetailRef}
             />
-            <div className="crm-print-root">
+            <div ref={printDetailRef} className="crm-print-root" data-crm-print-root>
               <h2 className="mb-3 hidden text-base font-bold text-slate-900 print:block dark:text-white">
                 Enquiry {viewRow.enquiryId || viewRow.id}
               </h2>
